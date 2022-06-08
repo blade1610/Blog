@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useRef} from "react";
 import styled from "styled-components";
 import {useController} from "react-hook-form";
-import IconEyeOpen from "../iconEye/IconEyeOpen";
+// import IconEyeOpen from "../iconEye/IconEyeOpen";
+import PropTypes from "prop-types";
 const Input = ({
   id,
   name = "",
@@ -9,6 +10,7 @@ const Input = ({
   placeholder = "",
   control,
   children,
+  ref,
   ...props
 }) => {
   const {field} = useController({
@@ -23,6 +25,7 @@ const Input = ({
         type={type}
         id={name}
         placeholder={placeholder}
+        ref={ref}
         {...props}
         {...field}
       />
@@ -58,6 +61,28 @@ const InputStyles = styled.div`
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
+    z-index: 10;
+    svg {
+      pointer-events: none;
+    }
   }
 `;
+Input.propTypes = {
+  id: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  type: PropTypes.oneOf([
+    "text",
+    "radio",
+    "checkbox",
+    "submit",
+    "password",
+    "button",
+    "number",
+    "email",
+  ]).isRequired,
+  placeholder: PropTypes.string,
+  control: PropTypes.object.isRequired,
+  children: PropTypes.node,
+  props: PropTypes.any,
+};
 export default Input;

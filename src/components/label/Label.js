@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 const Label = ({htmlFor = "", children, ...props}) => {
   return (
     <LabelStyles htmlFor={htmlFor} {...props}>
@@ -13,5 +14,9 @@ const LabelStyles = styled.label`
   cursor: pointer;
   font-size: 2rem;
 `;
-
+Label.propTypes = {
+  htmlFor: PropTypes.string,
+  children: PropTypes.node,
+  props: PropTypes.any,
+};
 export default Label;

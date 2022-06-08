@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-
+import PropTypes from "prop-types";
 const Loading = ({size = "30px", borderSize = "5px", ...props}) => {
   return (
     <LoadingStyles size={size} borderSize={borderSize}></LoadingStyles>
@@ -22,5 +22,9 @@ const LoadingStyles = styled.div`
     }
   }
 `;
-
+Loading.propTypes = {
+  size: PropTypes.string,
+  borderSize: PropTypes.string,
+  propTypes: PropTypes.any,
+};
 export default Loading;
