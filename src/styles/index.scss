@@ -50,9 +50,29 @@ h5,
 h6 {
   overflow-wrap: break-word;
 }
+ul {
+  padding-left: 0;
+}
 .container {
   width: 100%;
-  max-width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+}
+.Toastify__close-button {
+  svg {
+    width: 24px !important;
+    height: 20px !important;
+  }
+}
+.Toastify__toast-body {
+  div:last-child {
+    font-size: 1.6rem;
+    line-height: 1.6rem;
+    font-family: Muli;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    // justify-content: center;
+  }
 }
