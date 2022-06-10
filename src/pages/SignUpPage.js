@@ -17,6 +17,7 @@ import {
 import {db, auth} from "../firebase/firebase-config";
 import {addDoc, collection} from "firebase/firestore";
 import AuthenticationPage from "./AuthenticationPage";
+import InputPassowrd from "../components/input/InputPassowrd";
 const schema = yup.object({
   fullname: yup.string().required("Please Enter Your Fullname"),
   email: yup
@@ -64,9 +65,9 @@ const SignUpPage = () => {
       displayName: values.fullname,
     });
     toast.success("Register Successfully");
-    navigate("/");
+    navigate("/sign-in");
   };
-  const [togglePassword, setTogglePassword] = useState(false);
+
   useEffect(() => {
     const arrErrors = Object.values(errors);
     if (arrErrors.length > 0) {
@@ -100,28 +101,7 @@ const SignUpPage = () => {
             control={control}
           ></Input>
           <Label htmlFor={"password"}>Password</Label>
-          <Input
-            type={togglePassword ? "text" : "password"}
-            name="password"
-            placeholder="Enter your password"
-            control={control}
-          >
-            {!togglePassword ? (
-              <IconEyeClose
-                onClick={(e) => {
-                  e.target.focus();
-                  setTogglePassword(true);
-                }}
-              ></IconEyeClose>
-            ) : (
-              <IconEyeOpen
-                onClick={(e) => {
-                  e.target.focus();
-                  setTogglePassword(false);
-                }}
-              ></IconEyeOpen>
-            )}
-          </Input>
+          <InputPassowrd control={control}></InputPassowrd>
         </Field>
         <div className="have-account">
           Already have an account?

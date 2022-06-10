@@ -10,7 +10,6 @@ const Input = ({
   placeholder = "",
   control,
   children,
-  ref,
   ...props
 }) => {
   const {field} = useController({
@@ -25,7 +24,6 @@ const Input = ({
         type={type}
         id={name}
         placeholder={placeholder}
-        ref={ref}
         {...props}
         {...field}
       />

@@ -11,7 +11,7 @@ function AuthProvider(props) {
       // console.log(user);
       setUserInfo(user);
     });
-  });
+  }, []);
   return (
     <AuthContext.Provider value={value} {...props}></AuthContext.Provider>
   );

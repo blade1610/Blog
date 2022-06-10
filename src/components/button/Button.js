@@ -15,7 +15,7 @@ const Button = ({
   const child = !!isLoading ? <Loading></Loading> : children;
   if (to !== "" && typeof to === "string") {
     return (
-      <NavLink to={to}>
+      <NavLink to={to} className="w-fit">
         <ButtonStyles width={width} height={height} type={type} {...props}>
           {child}
         </ButtonStyles>
@@ -35,12 +35,14 @@ const Button = ({
   );
 };
 const ButtonStyles = styled.button`
+  a {
+    width: fit-content;
+  }
   display: flex;
   justify-content: center;
   align-items: center;
   height: ${(props) => props.height};
   width: ${(props) => props.width};
-
   padding: 0 20px;
   cursor: pointer;
   line-height: 1;

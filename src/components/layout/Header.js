@@ -97,11 +97,41 @@ const Header = () => {
                 </svg>
               </span>
             </div>
+            {/* <span className="search-icon-res">
+              <svg
+                width="18"
+                height="17"
+                viewBox="0 0 18 17"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <ellipse
+                  cx="7.66669"
+                  cy="7.05161"
+                  rx="6.66669"
+                  ry="6.05161"
+                  stroke="#999999"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M17.0001 15.5237L15.2223 13.9099L14.3334 13.103L12.5557 11.4893"
+                  stroke="#999999"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M11.6665 12.2964C12.9671 12.1544 13.3706 11.8067 13.4443 10.6826"
+                  stroke="#999999"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span> */}
             {!userInfo ? (
               <Button
                 to="/sign-up"
-                style={{maxWidth: "max-content"}}
                 type="button"
+                className="max-w-max ml-auto"
               >
                 Sign Up
               </Button>
@@ -118,6 +148,7 @@ const Header = () => {
   );
 };
 const HeaderStyles = styled.div`
+  padding: 20px 0;
   .header-main {
     display: flex;
     align-items: center;
@@ -146,6 +177,9 @@ const HeaderStyles = styled.div`
     max-width: 600px;
     gap: 20px;
     height: 60px;
+    /* @media only screen and (max-width: 768px) {
+      display: none;
+    } */
   }
   .search {
     max-width: 600px;
@@ -166,10 +200,33 @@ const HeaderStyles = styled.div`
       cursor: pointer;
     }
   }
+  .search-icon-res {
+    display: none;
+    cursor: pointer;
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
   .user-name {
     font-size: 1.6rem;
     span {
       color: ${(props) => props.theme.primary};
+      cursor: pointer;
+    }
+  }
+  @media screen and (max-width: 1023.98px) {
+    .logo {
+      max-width: 90px;
+    }
+    .menu,
+    .search,
+    .header-button,
+    .header-auth {
+      display: none;
+    }
+    .search-icon-res {
+      display: block;
     }
   }
 `;
