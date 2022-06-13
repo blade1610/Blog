@@ -77,6 +77,7 @@ Input.propTypes = {
     "button",
     "number",
     "email",
+    "file",
   ]).isRequired,
   placeholder: PropTypes.string,
   control: PropTypes.object.isRequired,
