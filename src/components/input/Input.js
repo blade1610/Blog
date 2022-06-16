@@ -10,6 +10,7 @@ const Input = ({
   placeholder = "",
   control,
   children,
+  className = "",
   ...props
 }) => {
   const {field} = useController({
@@ -20,7 +21,7 @@ const Input = ({
   return (
     <InputStyles hasIcon={children ? true : false}>
       <input
-        className="input"
+        className={`input ${className}`}
         type={type}
         id={name}
         placeholder={placeholder}
