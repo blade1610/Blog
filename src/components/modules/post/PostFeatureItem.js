@@ -1,28 +1,67 @@
-import React from "react";
 import styled from "styled-components";
-import PostCategory from "./PostCategory";
-import PostImage from "./PostImage";
-import PostMeta from "./PostMeta";
+import slugify from "slugify";
+import React, {useEffect, useState} from "react";
 import PostTitle from "./PostTitle";
+import PostMeta from "./PostMeta";
+import PostImage from "./PostImage";
+import PostCategory from "./PostCategory";
+import {doc, getDoc} from "firebase/firestore";
+import {db} from "../../../firebase/firebase-config";
 
-const PostFeatureItem = () => {
+const PostFeatureItem = ({data}) => {
+  const [category, setCategory] = useState("");
+  const [user, setUser] = useState("");
+  useEffect(() => {
+    async function getCategory() {
+      const docRef = doc(db, "categories", data.categoryId);
+      const docSnap = await getDoc(docRef);
+      setCategory(docSnap.data());
+    }
+    getCategory();
+  }, [data.categoryId]);
+  useEffect(() => {
+    async function getUser() {
+      if (data.userId) {
+        const docRef = doc(db, "users", data.userId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap) {
+          setUser(docSnap.data());
+        }
+      }
+    }
+    getUser();
+  }, [data.userId]);
+  // console.log(data);
+
+  if (!data || !data.id) return null;
+  const date = data?.createdAt
+    ? new Date(data?.createdAt?.seconds * 1000)
+    : new Date();
+  const formatDate = new Date(date).toLocaleDateString("vi-VI");
+
   return (
     <PostFeatureItemStyles>
-      <PostImage
-        to="/"
-        url={
-          "https://images.unsplash.com/photo-1614624532983-4ce03382d63d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2662&q=80"
-        }
-        alt={"unsplash"}
-      ></PostImage>
+      <PostImage to="/" url={data.image} alt={"image"}></PostImage>
       <div className="post-overlay"></div>
       <div className="post-content">
         <div className="post-top">
-          <PostCategory>Kiến thức</PostCategory>
-          <PostMeta></PostMeta>
+          {category?.name && (
+            <PostCategory to={category.slug}>
+              {`${category.name
+                .charAt(0)
+                .toUpperCase()}${category.name.slice(1)}`}
+            </PostCategory>
+          )}
+          {user?.fullname && (
+            <PostMeta
+              to={slugify(user.fullname || "/", {lower: true})}
+              authorName={user.fullname}
+              date={formatDate}
+            ></PostMeta>
+          )}
         </div>
-        <PostTitle size="large">
-          Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
+        <PostTitle to={data.slug} size="large">
+          {data.title}
         </PostTitle>
       </div>
     </PostFeatureItemStyles>
@@ -35,6 +74,7 @@ const PostFeatureItemStyles = styled.div`
   height: 169px;
   a {
     height: 100%;
+    width: 100%;
   }
   .post {
     &-image {
@@ -50,12 +90,14 @@ const PostFeatureItemStyles = styled.div`
       background-color: rgba(0, 0, 0, 0.75);
       mix-blend-mode: multiply;
       opacity: 0.6;
+      pointer-events: none;
     }
     &-content {
       position: absolute;
       inset: 0;
       z-index: 10;
       padding: 20px;
+      /* pointer-events: none; */
       color: white;
     }
     &-top {
@@ -65,6 +107,7 @@ const PostFeatureItemStyles = styled.div`
       margin-bottom: 16px;
     }
     &-category {
+      width: max-content;
     }
 
     &-title {
