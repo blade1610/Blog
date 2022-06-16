@@ -1,11 +1,14 @@
 import React from "react";
+import DashboardHeading from "../components/modules/dashboard/DashboardHeading";
 
 const DashboardPage = () => {
   return (
-    <div>
-      <h1 className="dashboard-heading">Dashboard page</h1>
-      <p className="dashboard-short-desc">Overview Dashboard Monitor</p>
-    </div>
+    <>
+      <DashboardHeading
+        title="Dashboard page"
+        desc="Overview Dashboard Monitor"
+      ></DashboardHeading>
+    </>
   );
 };
 
