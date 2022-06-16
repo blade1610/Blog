@@ -22,7 +22,7 @@ const schema = yup.object({
     .required("Please Enter Your Email"),
   password: yup
     .string()
-    .min(8, "Password must be at least 8 characters")
+    // .min(8, "Password must be at least 8 characters")
     // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, {
     //   message:
     //     "Password must be at least one uppercase letter, one lowercase letter and one number",
@@ -37,13 +37,20 @@ const SignInPage = () => {
     handleSubmit,
     formState: {errors, isValid, isSubmitting},
   } = useForm({
-    mode: "onBlur",
+    mode: "onSubmit",
     resolver: yupResolver(schema),
   });
   const handleSignIn = async (values) => {
-    if (!isValid) return;
-    await signInWithEmailAndPassword(auth, values.email, values.password);
-    navigate("/");
+    // if (!isValid) return;
+    await signInWithEmailAndPassword(auth, values.email, values.password)
+      .then(function (data) {
+        // success sign in, do stuff
+        navigate("/");
+      })
+      .catch(function (error) {
+        console.log(error);
+        toast.error("Invalid Current Email or Password");
+      });
   };
   useEffect(() => {
     const arrErrors = Object.values(errors);
@@ -80,7 +87,12 @@ const SignInPage = () => {
         </Field>
         <div className="have-account">
           Don't have an account?
-          <NavLink to={"/sign-up"}>Sign up</NavLink>
+          <NavLink
+            to={"/sign-up"}
+            className="decoration-black decoration-slice decoration-solid decoration-1"
+          >
+            Sign up
+          </NavLink>
         </div>
         <Button
           type="submit"
