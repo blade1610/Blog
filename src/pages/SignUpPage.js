@@ -15,11 +15,12 @@ import {
   updateProfile,
 } from "firebase/auth";
 import {db, auth} from "../firebase/firebase-config";
-import {addDoc, collection} from "firebase/firestore";
+import {addDoc, collection, doc, setDoc} from "firebase/firestore";
 import AuthenticationPage from "./AuthenticationPage";
 import InputPassowrd from "../components/input/InputPassowrd";
+import slugify from "slugify";
 const schema = yup.object({
-  fullname: yup.string().required("Please Enter Your Fullname"),
+  fullname: yup.string().required("Please Enter Your Fullname").min(5),
   email: yup
     .string()
     .email("Email must be a valid email address")
@@ -43,8 +44,7 @@ const SignUpPage = () => {
     watch,
     reset,
   } = useForm({
-    mode: "onSubmit",
-    reValidateMode: "onChange",
+    mode: "onTouched",
     resolver: yupResolver(schema),
   });
 
@@ -56,11 +56,17 @@ const SignUpPage = () => {
       values.password
     );
     const colRef = collection(db, "users");
-    addDoc(colRef, {
+    await setDoc(doc(db, "users", auth.currentUser.uid), {
       fullname: values.fullname,
       email: values.email,
       password: values.password,
+      username: slugify(values.fullname, {lower: true}),
     });
+    // await addDoc(colRef, {
+    //   fullname: values.fullname,
+    //   email: values.email,
+    //   password: values.password,
+    // });
     await updateProfile(auth.currentUser, {
       displayName: values.fullname,
     });
