@@ -10,9 +10,16 @@ export const theme = {
   gray6B: "#6B6B6B",
   gray23: "#232323",
   gray80: "#808191",
+  gray4b: "#4B5264",
+  grayf1: "#F1F1F3",
+  black: "#171725",
 };
 export const postStatus = {
   APPROVED: 1,
   PENDING: 2,
   REJECT: 3,
+};
+export const categoryStatus = {
+  APPROVED: 1,
+  UNAPPROVED: 2,
 };
