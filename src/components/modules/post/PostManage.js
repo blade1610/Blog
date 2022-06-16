@@ -1,13 +1,20 @@
 import React from "react";
 import styled from "styled-components";
+import {Dropdown} from "../../dropdown";
 import {Pagination} from "../../pagination";
 import {Table} from "../../table";
 
 const PostManage = () => {
   return (
     <PostManageStyles>
-      <h1 className="dashboard-heading">Manage post</h1>
-      <div className="flex justify-end mb-10">
+      <h1 className="dashboard-heading">All posts</h1>
+      <p className="dashboard-short-desc ">Manage all posts</p>
+      <div className="flex justify-end gap-5 mb-10">
+        <div className="w-full max-w-[200px]">
+          <Dropdown>
+            <Dropdown.Select placeholder="Category"></Dropdown.Select>
+          </Dropdown>
+        </div>
         <div className="w-full max-w-[300px]">
           <input
             type="text"
