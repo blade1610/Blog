@@ -23,7 +23,7 @@ const Radio = ({checked, children, control, name, ...rest}) => {
             checked ? "bg-[#ff914d]" : "bg-gray-200"
           }`}
         ></div>
-        <span>{children}</span>
+        <span className="text-[1.6rem]">{children}</span>
       </div>
     </label>
   );

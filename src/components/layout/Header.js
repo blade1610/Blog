@@ -127,7 +127,7 @@ const Header = () => {
                 />
               </svg>
             </span> */}
-            {!userInfo ? (
+            {/* {!userInfo ? (
               <Button
                 to="/sign-up"
                 type="button"
@@ -140,7 +140,15 @@ const Header = () => {
                 <strong>Welcome back, </strong>
                 <span>{getLastName(userInfo?.displayName)}</span>
               </span>
-            )}
+            )} */}
+            <Button
+              type="button"
+              height="60px"
+              className="header-button"
+              to="/dashboard"
+            >
+              Dashboard
+            </Button>
           </div>
         </div>
       </div>

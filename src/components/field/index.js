@@ -1,3 +1,3 @@
 import Field from "./Field";
-
-export {Field};
+import FieldCheckboxes from "./FieldCheckBoxes";
+export {Field, FieldCheckboxes};

@@ -79,7 +79,7 @@ Input.propTypes = {
     "number",
     "email",
     "file",
-  ]).isRequired,
+  ]),
   placeholder: PropTypes.string,
   control: PropTypes.object.isRequired,
   children: PropTypes.node,
