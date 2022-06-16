@@ -7,10 +7,9 @@ import HomeBanner from "../components/modules/home/HomeBanner";
 import HomeFeature from "../components/modules/home/HomeFeature";
 import Layout from "../components/layout/Layout";
 import HomeNewest from "../components/modules/home/HomeNewest";
+import {useAuth} from "../contexts/auth-context";
 const HomePage = () => {
-  const handleSignOut = () => {
-    signOut(auth);
-  };
+  const {userInfo} = useAuth();
   useEffect(() => {
     document.title = "Home Page";
     window.scrollTo(0, 0);
@@ -18,7 +17,7 @@ const HomePage = () => {
   return (
     <HomePageStyles>
       <Layout>
-        {/* <button onClick={handleSignOut}>asasasas</button> */}
+        {/* {!userInfo && <HomeBanner></HomeBanner>} */}
         <HomeBanner></HomeBanner>
         <HomeFeature></HomeFeature>
         <HomeNewest></HomeNewest>
