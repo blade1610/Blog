@@ -1,5 +1,4 @@
 import React, {Fragment} from "react";
-import {getStorage, ref, deleteObject} from "firebase/storage";
 
 const ImageUpload = (props) => {
   const {
@@ -25,7 +24,7 @@ const ImageUpload = (props) => {
       {progress !== 0 && !image && (
         <div className="loading border-t-transparent animate-spin absolute z-10 w-16 h-16 border-8 border-orange-400 rounded-full"></div>
       )}
-      {!image && progress === 0 && (
+      {!image && image === "" && progress === 0 && (
         <div className="flex flex-col items-center text-center transition-all pointer-events-none">
           <img
             src={require("../../assets/images/img-upload.png")}
