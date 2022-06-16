@@ -7,7 +7,7 @@ const DashboardHeader = () => {
     <DashboardHeaderStyles>
       <Button
         type="button"
-        to="/dashboard"
+        to="/manage/add-post"
         className="header-button"
         height="52px"
       >

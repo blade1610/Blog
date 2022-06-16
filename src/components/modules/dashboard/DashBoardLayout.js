@@ -1,10 +1,14 @@
 import React from "react";
-import {Outlet} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import styled from "styled-components";
+import {useAuth} from "../../../contexts/auth-context";
 import DashboardHeader from "./DashboardHeader";
 import Sidebar from "./Sidebar";
-
+import NotFoundPage from "../../../pages/NotFoundPage";
 const DashboardLayout = ({children}) => {
+  const {userInfo} = useAuth();
+
+  if (!userInfo) return <NotFoundPage></NotFoundPage>;
   return (
     <DashboardStyles>
       <DashboardHeader></DashboardHeader>
@@ -31,7 +35,7 @@ const DashboardStyles = styled.div`
     &-heading {
       font-weight: bold;
       font-size: 36px;
-      margin-bottom: 40px;
+      margin-bottom: 12px;
       background: -webkit-linear-gradient(
         ${(props) => props.theme.primary},
         ${(props) => props.theme.secondary}
@@ -39,6 +43,9 @@ const DashboardStyles = styled.div`
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: 1px;
+    }
+    &-short-desc {
+      font-weight: 600;
     }
   }
 `;
