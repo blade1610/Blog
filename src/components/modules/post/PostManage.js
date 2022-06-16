@@ -3,12 +3,14 @@ import styled from "styled-components";
 import {Dropdown} from "../../dropdown";
 import {Pagination} from "../../pagination";
 import {Table} from "../../table";
-
+import DashboardHeading from "../../modules/dashboard/DashboardHeading";
 const PostManage = () => {
   return (
     <PostManageStyles>
-      <h1 className="dashboard-heading">All posts</h1>
-      <p className="dashboard-short-desc ">Manage all posts</p>
+      <DashboardHeading
+        title="All posts"
+        desc="Manage all posts"
+      ></DashboardHeading>
       <div className="flex justify-end gap-5 mb-10">
         <div className="w-full max-w-[200px]">
           <Dropdown>

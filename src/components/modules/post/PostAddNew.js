@@ -11,7 +11,7 @@ import {toast} from "react-toastify";
 import {postStatus} from "../../../utils/constants";
 import {Label} from "../../label";
 import {Input} from "../../input";
-import {Field} from "../../field";
+import {Field, FieldCheckboxes} from "../../field";
 import {Dropdown} from "../../dropdown";
 import {db} from "../../../firebase/firebase-config";
 import {Button} from "../../button";
@@ -198,7 +198,7 @@ const PostAddNew = () => {
           </Field>
           <Field>
             <Label>Status</Label>
-            <div className="gap-x-5 flex items-center">
+            <FieldCheckboxes>
               <Radio
                 name="status"
                 control={control}
@@ -224,12 +224,11 @@ const PostAddNew = () => {
                 control={control}
                 checked={+watchStatus === postStatus.REJECT}
                 onClick={() => setValue("status", "reject")}
-                // value="reject"
                 value={postStatus.REJECT}
               >
                 Reject
               </Radio>
-            </div>
+            </FieldCheckboxes>
           </Field>
         </div>
         <Button type="submit" className="mx-auto" isLoading={loading}>
