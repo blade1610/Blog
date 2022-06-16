@@ -1,9 +1,18 @@
-import {createContext, useContext} from "react";
+import {createContext, useContext, useState} from "react";
 
 const DropdownContext = createContext();
 function DropdownProvider(props) {
+  const [show, setShow] = useState(false);
+  const handleToggleDropdown = () => {
+    setShow(!show);
+  };
+  const values = {
+    handleToggleDropdown,
+    show,
+    setShow,
+  };
   return (
-    <DropdownContext.Provider value={props}>
+    <DropdownContext.Provider value={values}>
       {props.children}
     </DropdownContext.Provider>
   );
