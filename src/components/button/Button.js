@@ -15,7 +15,7 @@ const Button = ({
   const child = !!isLoading ? <Loading></Loading> : children;
   if (to !== "" && typeof to === "string") {
     return (
-      <NavLink to={to} className="w-fit">
+      <NavLink to={to} className="w-fit h-fit">
         <ButtonStyles width={width} height={height} type={type} {...props}>
           {child}
         </ButtonStyles>
@@ -37,6 +37,7 @@ const Button = ({
 const ButtonStyles = styled.button`
   a {
     width: fit-content;
+    height: fit-content;
   }
   display: flex;
   justify-content: center;
