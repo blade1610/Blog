@@ -15,6 +15,7 @@ import UserAddNew from "./components/modules/user/UserAddNew";
 import UserProfile from "./components/modules/user/UserProfile";
 import CategoryAddNew from "./components/modules/category/CategoryAddNew";
 import CategoryManage from "./components/modules/category/CategoryManage";
+import CategoryUpdate from "./components/modules/category/CategoryUpdate";
 function App() {
   return (
     <>
@@ -44,16 +45,20 @@ function App() {
               element={<PostManage></PostManage>}
             ></Route>
             <Route
-              path="/manage/category"
-              element={<CategoryManage></CategoryManage>}
-            ></Route>
-            <Route
               path="/manage/add-post"
               element={<PostAddNew></PostAddNew>}
             ></Route>
             <Route
+              path="/manage/category"
+              element={<CategoryManage></CategoryManage>}
+            ></Route>
+            <Route
               path="/manage/add-category"
               element={<CategoryAddNew></CategoryAddNew>}
+            ></Route>
+            <Route
+              path="/manage/update-category"
+              element={<CategoryUpdate></CategoryUpdate>}
             ></Route>
             <Route
               path="/manage/user"
@@ -67,10 +72,10 @@ function App() {
               path="/profile"
               element={<UserProfile></UserProfile>}
             ></Route>
-            <Route
+            {/* <Route
               path="/manage/category"
               element={<PostCategory></PostCategory>}
-            ></Route>
+            ></Route> */}
           </Route>
         </Routes>
       </AuthProvider>
