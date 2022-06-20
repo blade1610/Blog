@@ -44,7 +44,7 @@ const PostAddNew = () => {
     });
   const watchStatus = watch("status");
   const watchHot = watch("hot");
-  // const watchCategory = watch("category");
+
   const {
     handleDeleteImage,
     handleUploadImage,
@@ -203,7 +203,7 @@ const PostAddNew = () => {
                 name="status"
                 control={control}
                 checked={+watchStatus === postStatus.APPROVED}
-                onClick={() => setValue("status", "approved")}
+                // onClick={() => setValue("status", "approved")}
                 // value="approved"
                 value={postStatus.APPROVED}
               >
@@ -213,7 +213,7 @@ const PostAddNew = () => {
                 name="status"
                 control={control}
                 checked={+watchStatus === postStatus.PENDING}
-                onClick={() => setValue("status", "pending")}
+                // onClick={() => setValue("status", "pending")}
                 // value="pending"
                 value={postStatus.PENDING}
               >
@@ -223,7 +223,7 @@ const PostAddNew = () => {
                 name="status"
                 control={control}
                 checked={+watchStatus === postStatus.REJECT}
-                onClick={() => setValue("status", "reject")}
+                // onClick={() => setValue("status", "reject")}
                 value={postStatus.REJECT}
               >
                 Reject
