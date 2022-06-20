@@ -1,70 +1,59 @@
-import slugify from "slugify";
-import React from "react";
-import Radio from "../../radio/Radio";
-import DashboardHeading from "../dashboard/DashboardHeading";
+import {doc, getDoc, updateDoc} from "firebase/firestore";
+import React, {useEffect} from "react";
 import {useForm} from "react-hook-form";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {toast} from "react-toastify";
-import {Label} from "../../label";
-import {Input} from "../../input";
-import {Field, FieldCheckboxes} from "../../field";
+import slugify from "slugify";
 import {db} from "../../../firebase/firebase-config";
 import {categoryStatus} from "../../../utils/constants";
 import {Button} from "../../button";
-import {addDoc, collection, serverTimestamp} from "firebase/firestore";
-const CategoryAddNew = () => {
+import {Field, FieldCheckboxes} from "../../field";
+import {Input} from "../../input";
+import {Label} from "../../label";
+import Radio from "../../radio/Radio";
+import DashboardHeading from "../dashboard/DashboardHeading";
+
+const CategoryUpdate = () => {
+  const [params] = useSearchParams();
+  const categoryId = params.get("id");
+  const navigate = useNavigate();
   const {
     control,
     setValue,
     handleSubmit,
     watch,
     reset,
-    formState: {errors, isSubmitting, isValid},
-  } = useForm({
-    mode: "onChange",
-    defaultValues: {
-      name: "",
-      slug: "",
-      status: 1,
-      createdAt: new Date(),
-    },
-  });
+    formState: {isSubmitting},
+  } = useForm({mode: "onSubmit", defaultValues: {}});
   const watchStatus = watch("status");
-
-  const handleAddNewCategory = async (values) => {
-    if (!isValid) return;
-    try {
-      const newValues = {...values};
-      newValues.slug = slugify(newValues.slug || newValues.name, {
-        lower: true,
-      });
-      const colRef = collection(db, "categories");
-      await addDoc(colRef, {
-        ...newValues,
-        createdAt: serverTimestamp(),
-      });
-      toast.success("Create New Category Successfully");
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    } finally {
-      reset({
-        name: "",
-        slug: "",
-        status: 1,
-        createdAt: new Date(),
-      });
-    }
+  const handleUpdateCategory = async (values) => {
+    const colRef = doc(db, "categories", categoryId);
+    await updateDoc(colRef, {
+      name: values.name,
+      slug: slugify(values.slug || values.title, {lower: true}),
+      status: Number(values.status),
+    });
+    toast.success("Update Category Successfully!");
+    navigate("/manage/category");
   };
+  useEffect(() => {
+    async function fetchData() {
+      const colRef = doc(db, "categories", categoryId);
+      const singleDoc = await getDoc(colRef);
+      reset(singleDoc.data());
+    }
+    fetchData();
+  }, [categoryId, reset]);
+  if (!categoryId) return null;
   return (
     <div>
       <DashboardHeading
-        title="New category"
-        desc="Add new category"
+        title="Update category"
+        desc={`Update your category id: ${categoryId}`}
       ></DashboardHeading>
-
       <form
-        onSubmit={handleSubmit(handleAddNewCategory)}
         autoComplete="off"
+        onSubmit={handleSubmit(handleUpdateCategory)}
       >
         <div className="form-layout">
           <Field>
@@ -110,16 +99,15 @@ const CategoryAddNew = () => {
         </div>
         <Button
           type="submit"
-          kind="primary"
           className="mx-auto"
           disabled={isSubmitting}
           isLoading={isSubmitting}
         >
-          Add new category
+          Update category
         </Button>
       </form>
     </div>
   );
 };
 
-export default CategoryAddNew;
+export default CategoryUpdate;
