@@ -12,6 +12,8 @@ const TableStyles = styled.div`
   overflow-x: auto;
   background-color: white;
   border-radius: 10px;
+  font-size: 1.6rem;
+  text-align: center;
   table {
     width: 100%;
   }
@@ -25,7 +27,7 @@ const TableStyles = styled.div`
   th {
     padding: 20px 30px;
     font-weight: 600;
-    text-align: left;
+    text-align: center;
   }
   td {
     padding: 15px 30px;
