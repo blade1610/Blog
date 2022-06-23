@@ -15,12 +15,19 @@ import {
   updateProfile,
 } from "firebase/auth";
 import {db, auth} from "../firebase/firebase-config";
-import {addDoc, collection, doc, setDoc} from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import AuthenticationPage from "./AuthenticationPage";
 import InputPassowrd from "../components/input/InputPassowrd";
 import slugify from "slugify";
+import {userRole, userStatus} from "../utils/constants";
 const schema = yup.object({
-  fullname: yup.string().required("Please Enter Your Fullname").min(5),
+  fullname: yup.string().required("Please Enter Your Fullname").min(4),
   email: yup
     .string()
     .email("Email must be a valid email address")
@@ -49,7 +56,7 @@ const SignUpPage = () => {
   });
 
   const handleSignUp = async (values) => {
-    if (!isValid) return;
+    // if (!isValid) return;
     const user = await createUserWithEmailAndPassword(
       auth,
       values.email,
@@ -61,6 +68,10 @@ const SignUpPage = () => {
       email: values.email,
       password: values.password,
       username: slugify(values.fullname, {lower: true}),
+      avatar: `https://ui-avatars.com/api/?name=${values.fullname}`,
+      status: userStatus.ACTIVE,
+      role: userRole.USER,
+      createdAt: serverTimestamp(),
     });
     // await addDoc(colRef, {
     //   fullname: values.fullname,
@@ -69,6 +80,7 @@ const SignUpPage = () => {
     // });
     await updateProfile(auth.currentUser, {
       displayName: values.fullname,
+      photoURL: `https://ui-avatars.com/api/?name=${values.fullname}`,
     });
     toast.success("Register Successfully");
     navigate("/sign-in");
