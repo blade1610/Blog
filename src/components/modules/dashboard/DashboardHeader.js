@@ -2,8 +2,11 @@ import Button from "../../button/Button";
 import React from "react";
 import styled from "styled-components";
 import {NavLink} from "react-router-dom";
+import {useAuth} from "../../../contexts/auth-context";
 
 const DashboardHeader = () => {
+  const {userInfo} = useAuth();
+  console.log(userInfo);
   return (
     <DashboardHeaderStyles>
       <NavLink to="/" className="logo">
@@ -27,7 +30,7 @@ const DashboardHeader = () => {
               </g>
             </svg>
           </div>
-          <span className="lg:inline-block hidden">Creative Block</span>
+          <span className="md:inline-block hidden">Creative Block</span>
         </div>
       </NavLink>
       <div className="header-right">
@@ -41,7 +44,11 @@ const DashboardHeader = () => {
         </Button>
         <div className="header-avatar">
           <img
-            src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3270&q=80"
+            src={
+              userInfo?.photoURL
+                ? userInfo.photoURL
+                : "https://i.pinimg.com/originals/4f/02/d5/4f02d57afe254fcb51e09cba977a03cc.jpg"
+            }
             alt=""
           />
         </div>
