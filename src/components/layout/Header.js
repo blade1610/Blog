@@ -141,14 +141,25 @@ const Header = () => {
                 <span>{getLastName(userInfo?.displayName)}</span>
               </span>
             )} */}
-            <Button
-              type="button"
-              height="60px"
-              className="header-button"
-              to="/dashboard"
-            >
-              Dashboard
-            </Button>
+            {userInfo ? (
+              <Button
+                type="button"
+                height="60px"
+                className="header-button"
+                to="/dashboard"
+              >
+                Dashboard
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                height="60px"
+                className="header-button"
+                to="/sign-in"
+              >
+                Login
+              </Button>
+            )}
           </div>
         </div>
       </div>
