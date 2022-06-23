@@ -4,13 +4,19 @@ import {Dropdown} from "../../dropdown";
 import {Pagination} from "../../pagination";
 import {Table} from "../../table";
 import DashboardHeading from "../../modules/dashboard/DashboardHeading";
+import {Button} from "../../button";
 const PostManage = () => {
   return (
     <PostManageStyles>
-      <DashboardHeading
-        title="All posts"
-        desc="Manage all posts"
-      ></DashboardHeading>
+      <div className="flex justify-between">
+        <DashboardHeading
+          title="All posts"
+          desc="Manage all posts"
+        ></DashboardHeading>
+        <Button type="button" height="60px" to="/manage/add-post">
+          Create new post
+        </Button>
+      </div>
       <div className="flex justify-end gap-5 mb-10">
         <div className="w-full max-w-[200px]">
           <Dropdown>
