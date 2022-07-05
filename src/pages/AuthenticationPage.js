@@ -5,7 +5,7 @@ const AuthenticationPage = ({children}) => {
   return (
     <AuthenticationPageStyles>
       <div className="container">
-        <NavLink to="/">
+        <NavLink to="/" className="w-fit h-fit block mx-auto">
           <span className="logo">
             <svg
               width="320"
