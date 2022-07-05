@@ -99,6 +99,7 @@ const CategoryManage = () => {
     }
     fetchData();
   }, [filter]);
+
   return (
     <Fragment>
       <div className="flex justify-between">
@@ -170,16 +171,18 @@ const CategoryManage = () => {
         </tbody>
       </Table>
       <div className="mx-auto mt-10">
-        {total > categoryList.length && (
-          <Button
-            type="button"
-            width="fit-content"
-            className="mx-auto"
-            onClick={() => handleLoadMoreCategory()}
-          >
-            Load more
-          </Button>
-        )}
+        {total &&
+          categoryList.length >= CATEGORY_PER_PAGE &&
+          categoryList.length < total && (
+            <Button
+              type="button"
+              width="fit-content"
+              className="mx-auto"
+              onClick={() => handleLoadMoreCategory()}
+            >
+              Load more
+            </Button>
+          )}
       </div>
     </Fragment>
   );
