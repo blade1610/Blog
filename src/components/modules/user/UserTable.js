@@ -1,13 +1,33 @@
-import {collection, onSnapshot} from "firebase/firestore";
+import {deleteUser, getAuth} from "firebase/auth";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  onSnapshot,
+  query,
+  startAfter,
+  where,
+} from "firebase/firestore";
 import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
+import Swal from "sweetalert2";
 import {db} from "../../../firebase/firebase-config";
 import {userRole, userStatus} from "../../../utils/constants";
-import {ActionDelete, ActionEdit, ActionView} from "../../action";
+import {ActionDelete, ActionEdit} from "../../action";
+import {Button} from "../../button";
 import LabelStatus from "../../label/LabelStatus";
 import Table from "../../table/Table";
-
-const Usertable = () => {
+const USER_PER_PAGE = 3;
+const Usertable = ({filter}) => {
   const [userList, setUserList] = useState([]);
+  const [userCount, setUserCount] = useState(0);
+  const [lastDoc, setLastDoc] = useState();
+  const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
   const renderLabelStatus = (status) => {
     switch (status) {
       case userStatus.ACTIVE:
@@ -33,17 +53,53 @@ const Usertable = () => {
         break;
     }
   };
-  useEffect(() => {
-    const colRef = collection(db, "users");
-    onSnapshot(colRef, (snapshot) => {
-      const result = [];
+  const handleLoadMoreUser = async () => {
+    const nextRef = query(
+      collection(db, "categories"),
+      startAfter(lastDoc || 0),
+      limit(USER_PER_PAGE)
+    );
+    onSnapshot(nextRef, (snapshot) => {
+      let result = [];
+      setUserCount(Number(snapshot.size));
       snapshot.forEach((doc) => {
         result.push({id: doc.id, ...doc.data()});
       });
-      setUserList(result);
+      setUserList([...userList, ...result]);
     });
-  }, []);
-  console.log(userList);
+    const documentSnapshots = await getDocs(nextRef);
+    const lastVisible =
+      documentSnapshots.docs[documentSnapshots.docs.length - 1];
+    setLastDoc(lastVisible);
+  };
+  useEffect(() => {
+    async function fetchData() {
+      const colRef = collection(db, "users");
+      const newRef = filter
+        ? query(
+            colRef,
+            where("fullname", ">=", filter),
+            where("fullname", "<=", filter + "utf8")
+          )
+        : query(colRef, limit(USER_PER_PAGE));
+      const documentSnapshots = await getDocs(newRef);
+      const lastVisible =
+        documentSnapshots.docs[documentSnapshots.docs.length - 1];
+      onSnapshot(colRef, (snapshot) => {
+        setTotal(snapshot.size);
+      });
+      onSnapshot(newRef, (snapshot) => {
+        let result = [];
+        setUserCount(Number(snapshot.size));
+        snapshot.forEach((doc) => {
+          result.push({id: doc.id, ...doc.data()});
+        });
+        setUserList(result);
+      });
+      setLastDoc(lastVisible);
+    }
+    fetchData();
+  }, [filter]);
   const renderUserItem = (user) => {
     return (
       <tr key={user.id}>
@@ -54,7 +110,7 @@ const Usertable = () => {
               src={
                 user?.avatar
                   ? user.avatar
-                  : "https://i.pinimg.com/originals/4f/02/d5/4f02d57afe254fcb51e09cba977a03cc.jpg"
+                  : "https://firebasestorage.googleapis.com/v0/b/blogging-7a19d.appspot.com/o/images%2Fdefault-avatar.jpg?alt=media&token=4142d16f-73b1-45bd-ae6c-f0544f9cb2a5"
               }
               alt=""
               className="flex-shrink-0 object-cover w-[50px] h-[50px] rounded-full"
@@ -75,12 +131,39 @@ const Usertable = () => {
         <td>{renderLabelRole(Number(user?.role))}</td>
         <td className="text-center">
           <div className="flex items-center justify-center gap-2">
-            <ActionEdit></ActionEdit>
-            <ActionDelete></ActionDelete>
+            <ActionEdit
+              onClick={() =>
+                navigate(`/manage/update-user/?id=${user.id}`)
+              }
+            ></ActionEdit>
+            <ActionDelete
+              onClick={() => handleDeleteUser(user)}
+            ></ActionDelete>
           </div>
         </td>
       </tr>
     );
+  };
+  const handleDeleteUser = async (user) => {
+    const colRef = doc(db, "users", user.id);
+    // const docSnap = await getDoc(colRef);
+    console.log(user);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        // await getAuth().deleteUser(user.id);
+        await deleteDoc(colRef);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        toast.success("Delete User Succesfully");
+      }
+    });
   };
   return (
     <div>
@@ -101,6 +184,20 @@ const Usertable = () => {
             userList.map((user) => renderUserItem(user))}
         </tbody>
       </Table>
+      <div className="mx-auto mt-10">
+        {total &&
+          userList.length >= USER_PER_PAGE &&
+          userList.length < total && (
+            <Button
+              type="button"
+              width="fit-content"
+              className="mx-auto"
+              onClick={() => handleLoadMoreUser()}
+            >
+              Load more
+            </Button>
+          )}
+      </div>
     </div>
   );
 };

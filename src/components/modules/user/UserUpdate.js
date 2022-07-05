@@ -1,5 +1,11 @@
-import React from "react";
+import {doc, getDoc, updateDoc} from "firebase/firestore";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
+import {useSearchParams} from "react-router-dom";
+import {toast} from "react-toastify";
+import {db} from "../../../firebase/firebase-config";
+import useFirebaseImage from "../../../hooks/useFirebaseImage";
+import {userRole, userStatus} from "../../../utils/constants";
 import {Button} from "../../button";
 import {Field, FieldCheckboxes} from "../../field";
 import ImageUpload from "../../image/ImageUpload";
@@ -7,120 +13,83 @@ import {Input} from "../../input";
 import {Label} from "../../label";
 import Radio from "../../radio/Radio";
 import DashboardHeading from "../dashboard/DashboardHeading";
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
-import useFirebaseImage from "../../../hooks/useFirebaseImage";
-import {userRole, userStatus} from "../../../utils/constants";
-import {async} from "@firebase/util";
-import {auth, db} from "../../../firebase/firebase-config";
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
-import slugify from "slugify";
-import {toast} from "react-toastify";
+import {getStorage, ref, getMetadata} from "firebase/storage";
+const UserUpdate = () => {
+  const [params] = useSearchParams();
+  const userId = params.get("id");
+  const [imageName, setImageName] = useState("");
 
-const UserAddNew = () => {
   const {
     control,
     handleSubmit,
-    formState: {errors, isSubmitting},
+    formState: {isSubmitting},
     watch,
     reset,
     setValue,
     getValues,
   } = useForm({
     mode: "onSubmit",
-    defaultValues: {
-      fullname: "",
-      email: "",
-      password: "",
-      username: "",
-      avatar: "",
-      status: userStatus.ACTIVE,
-      role: userRole.USER,
-      createdAt: new Date(),
-    },
+    defaultValues: {},
   });
-  const {
-    handleDeleteImage,
-    handleSelectImage,
-    progress,
-    image,
-    handleResetUpload,
-  } = useFirebaseImage(setValue, getValues);
+  const {handleDeleteImage, handleSelectImage, progress, image, setImage} =
+    useFirebaseImage(setValue, getValues, imageName, deleteAvatar);
   const watchStatus = watch("status");
   const watchRole = watch("role");
-  const handleCreateUser = async (values) => {
+  const imageUrl = getValues("avatar");
+  const storage = getStorage();
+  console.log(imageUrl);
+  const handleUpdateUser = async (values) => {
     try {
-      const colRef = collection(db, "users");
-      await createUserWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      ).then(async function (user) {
-        await addDoc(colRef, {
-          fullname: values.fullname,
-          email: values.email,
-          password: values.password,
-          username: slugify(values.username || values.fullname, {
-            lower: true,
-            replacement: "",
-            trim: true,
-          }),
-          avatar: image || ``,
-          status: Number(userStatus.ACTIVE),
-          role: Number(userRole.USER),
-          createdAt: serverTimestamp(),
-        });
-        // setDoc(doc(db, "users", user.uid), {
-        //   fullname: values.fullname,
-        //   email: values.email,
-        //   password: values.password,
-        //   username: slugify(values.username || values.fullname, {
-        //     lower: true,
-        //     replacement: "",
-        //     trim: true,
-        //   }),
-        //   avatar: image || ``,
-        //   status: Number(userStatus.ACTIVE),
-        //   role: Number(userRole.USER),
-        //   createdAt: serverTimestamp(),
-        // });
-        // insert any document you want here
+      const colRef = doc(db, "users", userId);
+      await updateDoc(colRef, {
+        ...values,
+        avatar: image,
       });
 
-      handleResetUpload();
-      toast.success(
-        `Create New User with email: ${values.email} successfully!`
-      );
-      reset({
-        fullname: "",
-        email: "",
-        password: "",
-        username: "",
-        avatar: "",
-        status: userStatus.ACTIVE,
-        role: userRole.USER,
-        createdAt: new Date(),
-      });
+      toast.success("Update User Successfully");
     } catch (error) {
       console.log(error);
-      toast.error("Cannot Create New User");
+      toast.error("Update User Failed");
     }
   };
+  async function deleteAvatar() {
+    const colRef = doc(db, "users", userId);
+    await updateDoc(colRef, {
+      avatar: "",
+    });
+  }
+  useEffect(() => {
+    async function fetchData() {
+      const colRef = doc(db, "users", userId);
+      const singleDoc = await getDoc(colRef);
+      reset(singleDoc.data());
+    }
+    fetchData();
+  }, [userId, reset]);
+  useEffect(() => {
+    if (imageUrl) {
+      const imageRef = ref(storage, imageUrl);
+      // Get metadata properties
+      getMetadata(imageRef)
+        .then((metadata) => {
+          setImageName(metadata.name);
+          setImage(imageUrl);
+          // Metadata now contains the metadata for 'images/forest.jpg'
+        })
+        .catch((error) => {
+          console.log(error);
+          // Uh-oh, an error occurred!
+        });
+    }
+  }, [imageUrl, setImage, storage]);
+  if (!userId) return null;
   return (
     <div>
       <DashboardHeading
         title="New user"
         desc="Add new user to system"
       ></DashboardHeading>
-      <form autoComplete={"off"} onSubmit={handleSubmit(handleCreateUser)}>
+      <form autoComplete={"off"} onSubmit={handleSubmit(handleUpdateUser)}>
         <div className="mb-10 text-center">
           <ImageUpload
             className="w-[200px] h-[200px] !rounded-full min-h-0 mx-auto"
@@ -234,11 +203,11 @@ const UserAddNew = () => {
           isLoading={isSubmitting}
           disabled={isSubmitting}
         >
-          Add new user
+          Update
         </Button>
       </form>
     </div>
   );
 };
 
-export default UserAddNew;
+export default UserUpdate;
