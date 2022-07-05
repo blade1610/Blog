@@ -1,12 +1,31 @@
 import Button from "../../button/Button";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
-import {NavLink} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import {useAuth} from "../../../contexts/auth-context";
-
+import {collection, doc, getDoc, updateDoc} from "firebase/firestore";
+import {db} from "../../../firebase/firebase-config";
 const DashboardHeader = () => {
   const {userInfo} = useAuth();
-  console.log(userInfo);
+
+  const [userData, setUserData] = useState({});
+  const navigate = useNavigate();
+  const handleGetDataCurrentUser = async (values) => {
+    const docRef = doc(db, "users", userInfo.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      // console.log("Document data:", docSnap.data());
+      setUserData(docSnap.data());
+    } else {
+      // doc.data() will be undefined in this case
+      // console.log("No such document!");
+    }
+  };
+
+  useEffect(() => {
+    if (userInfo && userInfo.uid) handleGetDataCurrentUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo]);
   return (
     <DashboardHeaderStyles>
       <NavLink to="/" className="logo">
@@ -42,13 +61,12 @@ const DashboardHeader = () => {
         >
           Write new post
         </Button>
-        <div className="header-avatar">
+        <div
+          className="header-avatar cursor-pointer"
+          onClick={() => navigate("/profile")}
+        >
           <img
-            src={
-              userInfo?.photoURL
-                ? userInfo.photoURL
-                : "https://i.pinimg.com/originals/4f/02/d5/4f02d57afe254fcb51e09cba977a03cc.jpg"
-            }
+            src={userData ? userData?.avatar : userInfo?.photoURL}
             alt=""
           />
         </div>
