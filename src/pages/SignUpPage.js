@@ -68,7 +68,7 @@ const SignUpPage = () => {
       email: values.email,
       password: values.password,
       username: slugify(values.fullname, {lower: true}),
-      avatar: `https://ui-avatars.com/api/?name=${values.fullname}`,
+      avatar: ``,
       status: userStatus.ACTIVE,
       role: userRole.USER,
       createdAt: serverTimestamp(),
