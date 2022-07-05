@@ -7,7 +7,12 @@ import {
 } from "firebase/storage";
 import {useState} from "react";
 
-export default function useFirebaseImage(setValue, getValues) {
+export default function useFirebaseImage(
+  setValue,
+  getValues,
+  imageName = null,
+  callback
+) {
   const [progress, setProgress] = useState(0);
   const [image, setImage] = useState("");
   if (!setValue || !getValues) return;
@@ -47,7 +52,6 @@ export default function useFirebaseImage(setValue, getValues) {
       () => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log("File available at", downloadURL);
           setImage(downloadURL);
         });
       }
@@ -55,14 +59,19 @@ export default function useFirebaseImage(setValue, getValues) {
   };
   const handleDeleteImage = () => {
     const storage = getStorage();
+    // if (!getValues("image_name")) return;
     // Create a reference to the file to delete
-    const imageRef = ref(storage, `images/${getValues("image_name")}`);
+    const imageRef = ref(
+      storage,
+      `images/${imageName || getValues("image_name")}`
+    );
     // Delete the file
     deleteObject(imageRef)
       .then(() => {
         // File deleted successfully
         setImage("");
         setProgress(0);
+        callback && callback();
       })
       .catch((error) => {
         // Uh-oh, an error occurred!
