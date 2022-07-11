@@ -21,7 +21,7 @@ import {ActionDelete, ActionEdit} from "../../action";
 import {Button} from "../../button";
 import LabelStatus from "../../label/LabelStatus";
 import Table from "../../table/Table";
-const USER_PER_PAGE = 3;
+const USER_PER_PAGE = 5;
 const Usertable = ({filter}) => {
   const [userList, setUserList] = useState([]);
   const [userCount, setUserCount] = useState(0);
@@ -46,7 +46,6 @@ const Usertable = ({filter}) => {
         return "Admin";
       case userRole.MODERATOR:
         return "Moderator";
-
       case userRole.USER:
         return "User";
       default:
@@ -55,7 +54,7 @@ const Usertable = ({filter}) => {
   };
   const handleLoadMoreUser = async () => {
     const nextRef = query(
-      collection(db, "categories"),
+      collection(db, "users"),
       startAfter(lastDoc || 0),
       limit(USER_PER_PAGE)
     );
@@ -100,6 +99,7 @@ const Usertable = ({filter}) => {
     }
     fetchData();
   }, [filter]);
+
   const renderUserItem = (user) => {
     return (
       <tr key={user.id}>
