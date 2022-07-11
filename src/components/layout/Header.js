@@ -234,7 +234,7 @@ const HeaderStyles = styled.div`
       cursor: pointer;
     }
   }
-  @media screen and (max-width: 1023.98px) {
+  @media screen and (max-width: 768px) {
     .logo {
       max-width: 90px;
     }

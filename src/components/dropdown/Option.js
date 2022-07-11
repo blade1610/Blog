@@ -1,7 +1,7 @@
 import React, {useRef} from "react";
 import {useDropdown} from "../../contexts/dropdown-context";
 
-const Option = ({onClick = () => {}, ...props}) => {
+const Option = ({onClick = () => {}, className = "", ...props}) => {
   const {setShow} = useDropdown();
 
   const handleClick = () => {
@@ -10,7 +10,8 @@ const Option = ({onClick = () => {}, ...props}) => {
   };
   return (
     <div
-      className="hover:bg-gray-100 flex items-center justify-between px-5 py-4 cursor-pointer"
+      className={`hover:bg-gray-100 flex items-center justify-between px-5 py-4 cursor-pointer ${className}`}
+      {...props}
       onClick={handleClick}
     >
       {props.children}
