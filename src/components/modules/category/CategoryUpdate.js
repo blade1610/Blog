@@ -28,9 +28,8 @@ const CategoryUpdate = () => {
   const watchStatus = watch("status");
   const handleUpdateCategory = async (values) => {
     const colRef = doc(db, "categories", categoryId);
-    console.log(colRef);
     await updateDoc(colRef, {
-      name: values.name,
+      name: values.name.toLowerCase(),
       slug: slugify(values.slug || values.title, {lower: true}),
       status: Number(values.status),
     });
