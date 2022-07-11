@@ -1,38 +1,33 @@
 import styled from "styled-components";
 import slugify from "slugify";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import PostTitle from "./PostTitle";
 import PostMeta from "./PostMeta";
 import PostImage from "./PostImage";
 import PostCategory from "./PostCategory";
-import {doc, getDoc} from "firebase/firestore";
-import {db} from "../../../firebase/firebase-config";
 
 const PostFeatureItem = ({data}) => {
-  const [category, setCategory] = useState("");
-  const [user, setUser] = useState("");
-  useEffect(() => {
-    async function getCategory() {
-      const docRef = doc(db, "categories", data.categoryId);
-      const docSnap = await getDoc(docRef);
-      setCategory(docSnap.data());
-    }
-    getCategory();
-  }, [data.categoryId]);
-  useEffect(() => {
-    async function getUser() {
-      if (data.userId) {
-        const docRef = doc(db, "users", data.userId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap) {
-          setUser(docSnap.data());
-        }
-      }
-    }
-    getUser();
-  }, [data.userId]);
-  // console.log(data);
-
+  const {category, user, author} = data;
+  // useEffect(() => {
+  //   async function getCategory() {
+  //     const docRef = doc(db, "categories", data.categoryId);
+  //     const docSnap = await getDoc(docRef);
+  //     setCategory(docSnap.data());
+  //   }
+  //   getCategory();
+  // }, [data.categoryId]);
+  // useEffect(() => {
+  //   async function getUser() {
+  //     if (data.userId) {
+  //       const docRef = doc(db, "users", data.userId);
+  //       const docSnap = await getDoc(docRef);
+  //       if (docSnap) {
+  //         setUser(docSnap.data());
+  //       }
+  //     }
+  //   }
+  //   getUser();
+  // }, [data.userId]);
   if (!data || !data.id) return null;
   const date = data?.createdAt
     ? new Date(data?.createdAt?.seconds * 1000)
@@ -52,13 +47,12 @@ const PostFeatureItem = ({data}) => {
                 .toUpperCase()}${category.name.slice(1)}`}
             </PostCategory>
           )}
-          {user?.fullname && (
-            <PostMeta
-              to={slugify(user.fullname || "/", {lower: true})}
-              authorName={user.fullname}
-              date={formatDate}
-            ></PostMeta>
-          )}
+
+          <PostMeta
+            to={slugify(author || "/", {lower: true})}
+            authorName={author}
+            date={formatDate}
+          ></PostMeta>
         </div>
         <PostTitle to={data.slug} size="large">
           {data.title}
