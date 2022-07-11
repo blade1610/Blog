@@ -17,6 +17,7 @@ import CategoryAddNew from "./components/modules/category/CategoryAddNew";
 import CategoryManage from "./components/modules/category/CategoryManage";
 import CategoryUpdate from "./components/modules/category/CategoryUpdate";
 import UserUpdate from "./components/modules/user/UserUpdate";
+import PostUpdate from "./components/modules/post/PostUpdate";
 function App() {
   return (
     <>
@@ -48,6 +49,10 @@ function App() {
             <Route
               path="/manage/add-post"
               element={<PostAddNew></PostAddNew>}
+            ></Route>
+            <Route
+              path="/manage/update-post"
+              element={<PostUpdate></PostUpdate>}
             ></Route>
             <Route
               path="/manage/category"
