@@ -28,6 +28,7 @@ export const userStatus = {
   PENDING: 2,
   BAN: 3,
 };
+
 export const userRole = {
   ADMIN: 1,
   MODERATOR: 2,
