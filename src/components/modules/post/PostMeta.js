@@ -44,6 +44,8 @@ const PostMetaStyles = styled.div`
     }
     &-author {
       font-size: 12px;
+      display: flex;
+      align-items: center;
       pointer-events: none;
     }
   }

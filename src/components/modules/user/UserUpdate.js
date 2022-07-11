@@ -37,7 +37,7 @@ const UserUpdate = () => {
   const watchRole = watch("role");
   const imageUrl = getValues("avatar");
   const storage = getStorage();
-  console.log(imageUrl);
+
   const handleUpdateUser = async (values) => {
     try {
       const colRef = doc(db, "users", userId);
