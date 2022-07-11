@@ -19,7 +19,7 @@ const HomeFeature = () => {
       colRef,
       where("status", "==", 1),
       where("hot", "==", true),
-      limit(3)
+      limit(5)
     );
     onSnapshot(queries, (snapshot) => {
       const result = [];
@@ -27,6 +27,7 @@ const HomeFeature = () => {
       setPosts(result);
     });
   }, []);
+
   return (
     <HomeFeatureStyles className="home-block">
       <div className="container">
