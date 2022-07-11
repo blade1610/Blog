@@ -66,7 +66,11 @@ const DashboardHeader = () => {
           onClick={() => navigate("/profile")}
         >
           <img
-            src={userData ? userData?.avatar : userInfo?.photoURL}
+            src={
+              userData && userData.avatar
+                ? userData?.avatar
+                : "https://firebasestorage.googleapis.com/v0/b/blogging-7a19d.appspot.com/o/images%2Fdefault-avatar.jpg?alt=media&token=4142d16f-73b1-45bd-ae6c-f0544f9cb2a5"
+            }
             alt=""
           />
         </div>
