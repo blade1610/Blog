@@ -22,26 +22,40 @@ import {
   getDocs,
   collection,
   addDoc,
+  doc,
+  getDoc,
 } from "firebase/firestore";
+
+import DashboardHeading from "../dashboard/DashboardHeading";
 
 const PostAddNew = () => {
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const {userInfo} = useAuth();
-  const {control, handleSubmit, watch, setValue, getValues, reset} =
-    useForm({
-      mode: "onChange",
-      defaultValues: {
-        title: "",
-        slug: "",
-        status: postStatus.PENDING,
-        category: "",
-        hot: false,
-        author: "",
-        image: "",
-      },
-    });
+  const [userDetails, setUserDetails] = useState({});
+  // const [categoryDetails, setCategoryDetails] = useState({});
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    reset,
+    formState: {isSubmitting},
+  } = useForm({
+    mode: "onSubmit",
+    defaultValues: {
+      title: "",
+      slug: "",
+      status: postStatus.PENDING,
+      category: {},
+      hot: false,
+      author: "",
+      image: "",
+      user: {},
+    },
+  });
   const watchStatus = watch("status");
   const watchHot = watch("hot");
 
@@ -57,9 +71,11 @@ const PostAddNew = () => {
     const cloneValues = {...values};
     try {
       setLoading(true);
+
       cloneValues.slug = slugify(values.slug || values.title, {
         lower: true,
       });
+      // cloneValues.title = cloneValues.title.toLowerCase();
       cloneValues.status = Number(cloneValues.status);
       if (cloneValues.images) handleUploadImage(cloneValues.images);
       const colRef = collection(db, "posts");
@@ -68,17 +84,17 @@ const PostAddNew = () => {
         image,
         userId: userInfo?.uid,
         createdAt: serverTimestamp(),
+        user: userDetails,
       });
-
       toast.success("Create New Post Successfully");
       reset({
         title: "",
         slug: "",
         status: postStatus.PENDING,
-        category: "",
+        category: {},
         hot: false,
-        author: "",
         image: "",
+        user: {},
       });
       handleResetUpload();
       setSelectCategory({});
@@ -88,10 +104,13 @@ const PostAddNew = () => {
       setLoading(false);
     }
   };
-  const handleClickOption = (item) => {
-    setValue("categoryId", item.id);
+  const handleClickOption = async (item) => {
+    const colRef = doc(db, "categories", item.id);
+    const docData = await getDoc(colRef);
+    setValue("category", {id: docData.id, ...docData.data()});
     setSelectCategory(item);
   };
+
   useEffect(() => {
     async function getData() {
       const colRef = collection(db, "categories");
@@ -111,10 +130,27 @@ const PostAddNew = () => {
   useEffect(() => {
     document.title = "Creative Block - Add New Post";
   }, []);
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!userInfo.email) return;
+      const q = query(
+        collection(db, "users"),
+        where("email", "==", userInfo.email)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        setUserDetails({id: doc.id, ...doc.data()});
+      });
+    }
+    fetchUserData();
+  }, [userInfo.email]);
 
   return (
     <PostAddNewStyles>
-      <h1 className="dashboard-heading">Add new post</h1>
+      <DashboardHeading
+        title="New post"
+        desc="Add new post "
+      ></DashboardHeading>
       <form onSubmit={handleSubmit(addPostHandler)}>
         <div className="gap-x-10 grid grid-cols-2 mb-10">
           <Field>
@@ -175,16 +211,6 @@ const PostAddNew = () => {
               </span>
             )}
           </Field>
-          <Field>
-            <Label>Author</Label>
-            <Input
-              type="text"
-              name="author"
-              control={control}
-              placeholder="Find the author"
-              style={{padding: "12px"}}
-            ></Input>
-          </Field>
         </div>
         <div className="gap-x-10 grid grid-cols-2 mb-10">
           <Field>
@@ -231,7 +257,12 @@ const PostAddNew = () => {
             </FieldCheckboxes>
           </Field>
         </div>
-        <Button type="submit" className="mx-auto" isLoading={loading}>
+        <Button
+          type="submit"
+          className="mx-auto"
+          isLoading={loading}
+          disabled={isSubmitting}
+        >
           Add new post
         </Button>
       </form>
@@ -243,7 +274,6 @@ const PostAddNewStyles = styled.div`
   .dashboard-heading {
     font-weight: bold;
     font-size: 3.6rem;
-    margin-bottom: 40px;
     background-image: -webkit-linear-gradient(
       ${(props) => props.theme.primary},
       ${(props) => props.theme.secondary}
