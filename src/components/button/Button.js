@@ -61,6 +61,9 @@ const ButtonStyles = styled.button`
     opacity: 0.5;
     pointer-events: none;
   }
+  @media only screen and (max-width: 768px) {
+    max-width: 124px;
+  }
 `;
 /**
  * @requires
