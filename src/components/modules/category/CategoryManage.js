@@ -151,7 +151,11 @@ const CategoryManage = () => {
                   </td>
                   <td className="text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <ActionView></ActionView>
+                      <ActionView
+                        onClick={() =>
+                          navigate(`/category/${category.slug}`)
+                        }
+                      ></ActionView>
                       <ActionEdit
                         onClick={() =>
                           navigate(

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import {NavLink} from "react-router-dom";
 import Button from "../button/Button";
 import {useAuth} from "../../contexts/auth-context";
+import Avatar from "../avatar/Avatar";
 const headerMenu = [
   {
     url: "/",
@@ -19,12 +20,12 @@ const headerMenu = [
 ];
 const Header = () => {
   const {userInfo} = useAuth();
-  const getLastName = (name) => {
-    if (name) {
-      const length = name.split(" ").length;
-      return name.split(" ")[length - 1];
-    } else return;
-  };
+  // const getLastName = (name) => {
+  //   if (name) {
+  //     const length = name.split(" ").length;
+  //     return name.split(" ")[length - 1];
+  //   } else return;
+  // };
   return (
     <HeaderStyles>
       <div className="container">
@@ -60,7 +61,7 @@ const Header = () => {
             })}
           </ul>
           <div className="header-right">
-            <div className="search">
+            {/* <div className="search">
               <input
                 type="text"
                 className="search-input"
@@ -96,7 +97,7 @@ const Header = () => {
                   />
                 </svg>
               </span>
-            </div>
+            </div> */}
             {/* <span className="search-icon-res">
               <svg
                 width="18"
@@ -141,7 +142,7 @@ const Header = () => {
                 <span>{getLastName(userInfo?.displayName)}</span>
               </span>
             )} */}
-            {userInfo ? (
+            {/* {userInfo?.email ? (
               <Button
                 type="button"
                 height="60px"
@@ -159,7 +160,18 @@ const Header = () => {
               >
                 Login
               </Button>
+            )} */}
+            {!userInfo?.userId && (
+              <Button
+                type="button"
+                height="60px"
+                className="header-button"
+                to="/sign-in"
+              >
+                Login
+              </Button>
             )}
+            {userInfo.userId && <Avatar></Avatar>}
           </div>
         </div>
       </div>
@@ -199,6 +211,11 @@ const HeaderStyles = styled.div`
     /* @media only screen and (max-width: 768px) {
       display: none;
     } */
+  }
+  .header-button {
+    @media only screen and (max-width: 768px) {
+      width: 120px;
+    }
   }
   .search {
     max-width: 600px;
@@ -240,7 +257,6 @@ const HeaderStyles = styled.div`
     }
     .menu,
     .search,
-    .header-button,
     .header-auth {
       display: none;
     }

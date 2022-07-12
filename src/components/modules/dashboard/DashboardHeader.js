@@ -1,13 +1,13 @@
 import Button from "../../button/Button";
 import React, {useEffect, useState} from "react";
 import styled from "styled-components";
-import {NavLink, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useAuth} from "../../../contexts/auth-context";
-import {collection, doc, getDoc, updateDoc} from "firebase/firestore";
+import {doc, getDoc} from "firebase/firestore";
 import {db} from "../../../firebase/firebase-config";
+import Avatar from "../../avatar/Avatar";
 const DashboardHeader = () => {
   const {userInfo} = useAuth();
-
   const [userData, setUserData] = useState({});
   const navigate = useNavigate();
   const handleGetDataCurrentUser = async (values) => {
@@ -28,7 +28,7 @@ const DashboardHeader = () => {
   }, [userInfo]);
   return (
     <DashboardHeaderStyles>
-      <NavLink to="/" className="logo">
+      <Link to="/" className="logo">
         <div className="container-logo">
           <div className="logo-svg">
             <svg
@@ -51,30 +51,8 @@ const DashboardHeader = () => {
           </div>
           <span className="md:inline-block hidden">Creative Block</span>
         </div>
-      </NavLink>
-      <div className="header-right">
-        <Button
-          type="button"
-          to="/dashboard"
-          className="header-button"
-          height="52px"
-        >
-          Write new post
-        </Button>
-        <div
-          className="header-avatar cursor-pointer"
-          onClick={() => navigate("/profile")}
-        >
-          <img
-            src={
-              userData && userData.avatar
-                ? userData?.avatar
-                : "https://firebasestorage.googleapis.com/v0/b/blogging-7a19d.appspot.com/o/images%2Fdefault-avatar.jpg?alt=media&token=4142d16f-73b1-45bd-ae6c-f0544f9cb2a5"
-            }
-            alt=""
-          />
-        </div>
-      </div>
+      </Link>
+      <Avatar></Avatar>
     </DashboardHeaderStyles>
   );
 };
