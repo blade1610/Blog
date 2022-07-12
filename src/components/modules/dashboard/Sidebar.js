@@ -216,6 +216,7 @@ const SidebarStyles = styled.div`
     width: 100vw;
     height: 100vh;
     z-index: 100;
+    border-radius: unset;
     background-color: rgb(148 163 184);
     .menu-item {
       width: 100%;
