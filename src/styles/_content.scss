@@ -1,6 +1,5 @@
 .entry-content,
 .entry-content .ql-snow .ql-editor {
-  font-family: "Epilogue", sans-serif;
   font-size: 16px;
   h1 {
     font-size: 36px;
@@ -55,6 +54,7 @@
   img {
     border-radius: 8px;
     margin-bottom: 30px;
+    margin: 0 auto;
   }
   @media screen and (max-width: 1023.98px) {
     font-size: 14px;

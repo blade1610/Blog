@@ -7,7 +7,7 @@ const List = ({children}) => {
   return (
     <Fragment>
       {show && (
-        <div className="top-full absolute left-0 z-10 w-full overflow-hidden bg-white rounded-lg shadow-2xl">
+        <div className="top-full absolute left-0 z-50 w-full overflow-hidden bg-white rounded-lg shadow-2xl">
           {children}
         </div>
       )}
