@@ -1,28 +1,48 @@
-import React from "react";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
+import {db} from "../../../firebase/firebase-config";
 import Heading from "../../layout/Heading";
 import PostNewestItem from "../post/PostNewestItem";
 import PostNewestLarge from "../post/PostNewestLarge";
-import PostItem from "../post/PostItem";
 
 const HomeNewest = () => {
+  const [posts, setPosts] = useState([]);
+  const [first, ...other] = posts;
+
+  useEffect(() => {
+    const colRef = collection(db, "posts");
+    const queries = query(
+      colRef,
+      where("status", "==", 1),
+      where("hot", "==", false),
+      limit(4)
+    );
+    onSnapshot(queries, (snapshot) => {
+      const result = [];
+      snapshot.forEach((doc) => result.push({id: doc.id, ...doc.data()}));
+      setPosts(result);
+    });
+  }, []);
+
   return (
     <HomeNewestStyles className="home-block">
       <div className="container">
         <Heading>Latest Posts</Heading>
         <div className="layout">
-          <PostNewestLarge></PostNewestLarge>
+          <PostNewestLarge data={first}></PostNewestLarge>
           <div className="sidebar">
-            <PostNewestItem></PostNewestItem>
-            <PostNewestItem></PostNewestItem>
-            <PostNewestItem></PostNewestItem>
+            {other.length > 0 &&
+              other.map((post) => (
+                <PostNewestItem key={post.id} data={post}></PostNewestItem>
+              ))}
           </div>
-        </div>
-        <div className="grid-layout grid-layout--primary ">
-          <PostItem></PostItem>
-          <PostItem></PostItem>
-          <PostItem></PostItem>
-          <PostItem></PostItem>
         </div>
       </div>
     </HomeNewestStyles>
