@@ -47,9 +47,7 @@ const SignUpPage = () => {
   const {
     control,
     handleSubmit,
-    formState: {errors, isValid, isSubmitting},
-    watch,
-    reset,
+    formState: {errors, isSubmitting},
   } = useForm({
     mode: "onTouched",
     resolver: yupResolver(schema),
@@ -62,7 +60,6 @@ const SignUpPage = () => {
       values.email,
       values.password
     );
-    const colRef = collection(db, "users");
     await setDoc(doc(db, "users", auth.currentUser.uid), {
       fullname: values.fullname,
       email: values.email,
@@ -72,6 +69,8 @@ const SignUpPage = () => {
       status: userStatus.ACTIVE,
       role: userRole.USER,
       createdAt: serverTimestamp(),
+      description: "",
+      userId: auth.currentUser.uid,
     });
     // await addDoc(colRef, {
     //   fullname: values.fullname,
@@ -83,7 +82,7 @@ const SignUpPage = () => {
       photoURL: `https://ui-avatars.com/api/?name=${values.fullname}`,
     });
     toast.success("Register Successfully");
-    navigate("/sign-in");
+    navigate("/");
   };
 
   useEffect(() => {

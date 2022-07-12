@@ -13,7 +13,7 @@ import {useSearchParams} from "react-router-dom";
 import {toast} from "react-toastify";
 import {db} from "../../../firebase/firebase-config";
 import useFirebaseImage from "../../../hooks/useFirebaseImage";
-import {postStatus} from "../../../utils/constants";
+import {postStatus, userRole} from "../../../utils/constants";
 import {Button} from "../../button";
 import {Dropdown} from "../../dropdown";
 import {Field, FieldCheckboxes} from "../../field";
@@ -30,11 +30,13 @@ import "react-quill/dist/quill.snow.css";
 import ImageUploader from "quill-image-uploader";
 import {imgbbApi} from "../../../config/apiConfig";
 import axios from "axios";
+import {useAuth} from "../../../contexts/auth-context";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const PostUpdate = () => {
   const [params] = useSearchParams();
   const postId = params.get("id");
+  const {userInfo} = useAuth();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
@@ -71,12 +73,15 @@ const PostUpdate = () => {
       values.status = Number(values.status);
       await updateDoc(colRef, {
         ...values,
-        content,
+        image,
+        categoryId: values.category.id,
+        content: content || "",
       });
 
       toast.success("Update Post Successfully");
     } catch (error) {
       setLoading(false);
+      toast.error(error.message);
       toast.error("Update Post Failed");
     } finally {
       setLoading(false);
@@ -93,6 +98,12 @@ const PostUpdate = () => {
       toolbar: [
         ["bold", "italic", "underline", "strike"],
         ["blockquote"],
+        [
+          {align: ""},
+          {align: "center"},
+          {align: "right"},
+          {align: "justify"},
+        ],
         [{header: 1}, {header: 2}], // custom button values
         [{list: "ordered"}, {list: "bullet"}],
         [{header: [1, 2, 3, 4, 5, 6, false]}],
@@ -120,7 +131,6 @@ const PostUpdate = () => {
     async function fetchData() {
       const colRef = doc(db, "posts", postId);
       const singleDoc = await getDoc(colRef);
-      console.log(singleDoc.data());
       reset(singleDoc.data());
       setSelectCategory(singleDoc.data()?.category);
       setContent(singleDoc.data()?.content);
@@ -242,50 +252,52 @@ const PostUpdate = () => {
             )}
           </Field>
         </div>
-        <div className="gap-x-10 grid grid-cols-2 mb-10">
-          <Field>
-            <Label>Feature Post</Label>
-            <Toggle
-              on={watchHot === true}
-              onClick={() => {
-                setValue("hot", !watchHot);
-              }}
-            ></Toggle>
-          </Field>
-          <Field>
-            <Label>Status</Label>
-            <FieldCheckboxes>
-              <Radio
-                name="status"
-                control={control}
-                checked={+watchStatus === postStatus.APPROVED}
-                onClick={() => setValue("status", "approved")}
-                value={+postStatus.APPROVED}
-              >
-                Approved
-              </Radio>
-              <Radio
-                name="status"
-                control={control}
-                checked={+watchStatus === postStatus.PENDING}
-                onClick={() => setValue("status", "pending")}
-                // value="pending"
-                value={+postStatus.PENDING}
-              >
-                Pending
-              </Radio>
-              <Radio
-                name="status"
-                control={control}
-                checked={+watchStatus === postStatus.REJECT}
-                onClick={() => setValue("status", "reject")}
-                value={+postStatus.REJECT}
-              >
-                Reject
-              </Radio>
-            </FieldCheckboxes>
-          </Field>
-        </div>
+        {userInfo.role !== userRole.USER && (
+          <div className="gap-x-10 grid grid-cols-2 mb-10">
+            <Field>
+              <Label>Feature Post</Label>
+              <Toggle
+                on={watchHot === true}
+                onClick={() => {
+                  setValue("hot", !watchHot);
+                }}
+              ></Toggle>
+            </Field>
+            <Field>
+              <Label>Status</Label>
+              <FieldCheckboxes>
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={+watchStatus === postStatus.APPROVED}
+                  onClick={() => setValue("status", "approved")}
+                  value={+postStatus.APPROVED}
+                >
+                  Approved
+                </Radio>
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={+watchStatus === postStatus.PENDING}
+                  onClick={() => setValue("status", "pending")}
+                  // value="pending"
+                  value={+postStatus.PENDING}
+                >
+                  Pending
+                </Radio>
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={+watchStatus === postStatus.REJECT}
+                  onClick={() => setValue("status", "reject")}
+                  value={+postStatus.REJECT}
+                >
+                  Reject
+                </Radio>
+              </FieldCheckboxes>
+            </Field>
+          </div>
+        )}
         <Button
           type="submit"
           className="mx-auto"
@@ -300,6 +312,7 @@ const PostUpdate = () => {
 };
 const PostUpdateStyles = styled.div`
   font-size: 1.6rem;
+  margin-bottom: 40px;
   .dashboard-heading {
     font-weight: bold;
     font-size: 3.6rem;

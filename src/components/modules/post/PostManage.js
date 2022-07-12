@@ -8,7 +8,10 @@ import PostTable from "./PostTable";
 import {debounce} from "lodash";
 import {collection, getDocs, query} from "firebase/firestore";
 import {db} from "../../../firebase/firebase-config";
+import {useAuth} from "../../../contexts/auth-context";
+import {userRole} from "../../../utils/constants";
 const PostManage = () => {
+  const {userInfo} = useAuth();
   const [filter, setFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [categoryList, setCategoryList] = useState([]);
@@ -42,7 +45,7 @@ const PostManage = () => {
         </Button>
       </div>
       <div className="flex justify-end gap-5 mb-10">
-        <div className="w-full max-w-[200px]">
+        <div className=" hidden w-full max-w-[200px]">
           <Dropdown>
             <Dropdown.Select placeholder="Category"></Dropdown.Select>
             <Dropdown.List>
@@ -54,7 +57,7 @@ const PostManage = () => {
                       className="hover:bg-secondary hover:text-white"
                       onClick={() => setCategoryFilter(category.name)}
                     >
-                      {`${category.name
+                      {`${category?.name
                         .charAt(0)
                         .toUpperCase()}${category.name.slice(1)}`}
                     </Dropdown.Option>
@@ -63,7 +66,7 @@ const PostManage = () => {
             </Dropdown.List>
           </Dropdown>
         </div>
-        <div className="w-full max-w-[300px]">
+        <div className="w-full md:max-w-[300px]">
           <input
             type="text"
             className="w-full h-full p-4 border border-gray-300 border-solid rounded-lg"
@@ -81,5 +84,6 @@ const PostManage = () => {
 };
 const PostManageStyles = styled.div`
   font-size: 1.6rem;
+  margin-bottom: 40px;
 `;
 export default PostManage;

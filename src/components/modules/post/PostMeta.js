@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import {NavLink} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 const PostMeta = ({
   date = "June 1",
@@ -13,9 +13,9 @@ const PostMeta = ({
     <PostMetaStyles className={`post-meta ${className}`}>
       <span className="post-time">{date}</span>
       <span className="post-dot"></span>
-      <NavLink to={to} className="post-link">
+      <Link to={`/user/${to}`} className="post-link">
         <span className="post-author">{authorName}</span>
-      </NavLink>
+      </Link>
     </PostMetaStyles>
   );
 };

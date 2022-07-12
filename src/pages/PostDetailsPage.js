@@ -9,16 +9,11 @@ import Heading from "../components/layout/Heading";
 import {useParams} from "react-router-dom";
 import NotFoundPage from "./NotFoundPage";
 import {db} from "../firebase/firebase-config";
-import {
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import {collection, onSnapshot, query, where} from "firebase/firestore";
 import parse from "html-react-parser";
 import slugify from "slugify";
+import AuthorBox from "../components/author/AuthorBox";
+import PostRelated from "../components/modules/post/PostRelated";
 const PostDetailsPage = () => {
   const {slug} = useParams();
   const [postInfo, setPostInfo] = useState({});
@@ -42,6 +37,9 @@ const PostDetailsPage = () => {
     }
     fetchData();
   }, [slug]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   if (!slug) return <NotFoundPage></NotFoundPage>;
   if (!postInfo) return null;
@@ -56,8 +54,10 @@ const PostDetailsPage = () => {
               className="post-feature"
             ></PostImage>
             <div className="post-info">
-              <PostCategory className="mb-6">
-                {postInfo?.category?.name}
+              <PostCategory to={postInfo?.category?.slug} className="mb-6">
+                {`${postInfo?.category?.name
+                  .charAt(0)
+                  .toUpperCase()}${postInfo?.category?.name.slice(1)}`}
               </PostCategory>
               <h1 className="post-heading">{postInfo?.title}</h1>
               <PostMeta
@@ -71,25 +71,12 @@ const PostDetailsPage = () => {
             <div className="entry-content">
               {parse(postInfo?.content || "")}
             </div>
-            <div className="author">
-              <div className="author-image">
-                <img src={user?.avatar} alt="" />
-              </div>
-              <div className="author-content">
-                <h3 className="author-name">{user?.fullname}</h3>
-                <p className="author-desc">{user?.description}</p>
-              </div>
-            </div>
+            <AuthorBox userId={user?.id}></AuthorBox>
           </div>
-          <div className="post-related">
-            <Heading>Bài viết liên quan</Heading>
-            <div className="grid-layout grid-layout--primary">
-              <PostItem></PostItem>
-              <PostItem></PostItem>
-              <PostItem></PostItem>
-              <PostItem></PostItem>
-            </div>
-          </div>
+          <PostRelated
+            categoryId={postInfo?.categoryId}
+            postInfo={postInfo}
+          ></PostRelated>
         </div>
       </Layout>
     </PostDetailsPageStyles>

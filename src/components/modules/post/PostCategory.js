@@ -1,6 +1,6 @@
 import React from "react";
 import styled, {css} from "styled-components";
-import {NavLink} from "react-router-dom";
+import {Link} from "react-router-dom";
 import PropTypes from "prop-types";
 const PostCategory = ({
   children,
@@ -10,7 +10,7 @@ const PostCategory = ({
 }) => {
   return (
     <PostCategoryStyles type={type} className={className}>
-      <NavLink to={to}>{children}</NavLink>
+      <Link to={`/category/${to}`}>{children}</Link>
     </PostCategoryStyles>
   );
 };

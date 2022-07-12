@@ -2,15 +2,19 @@ import useFirebaseImage from "../../../hooks/useFirebaseImage";
 import Toggle from "../../toggle/Toggle";
 import styled from "styled-components";
 import slugify from "slugify";
-import React, {useEffect, useState} from "react";
+import ReactQuill, {Quill} from "react-quill";
+import React, {useEffect, useMemo, useState} from "react";
 import Radio from "../../radio/Radio";
 import ImageUpload from "../../image/ImageUpload";
+import DashboardHeading from "../dashboard/DashboardHeading";
+import axios from "axios";
 import {useForm} from "react-hook-form";
 import {useAuth} from "../../../contexts/auth-context";
 import {toast} from "react-toastify";
-import {postStatus} from "../../../utils/constants";
+import {postStatus, userRole} from "../../../utils/constants";
 import {Label} from "../../label";
 import {Input} from "../../input";
+import {imgbbApi} from "../../../config/apiConfig";
 import {Field, FieldCheckboxes} from "../../field";
 import {Dropdown} from "../../dropdown";
 import {db} from "../../../firebase/firebase-config";
@@ -20,20 +24,21 @@ import {
   serverTimestamp,
   query,
   getDocs,
+  getDoc,
+  doc,
   collection,
   addDoc,
-  doc,
-  getDoc,
 } from "firebase/firestore";
-
-import DashboardHeading from "../dashboard/DashboardHeading";
-
+import ImageUploader from "quill-image-uploader";
+import "react-quill/dist/quill.snow.css";
+Quill.register("modules/imageUploader", ImageUploader);
 const PostAddNew = () => {
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const {userInfo} = useAuth();
   const [userDetails, setUserDetails] = useState({});
+  const [content, setContent] = useState("");
   // const [categoryDetails, setCategoryDetails] = useState({});
   const {
     control,
@@ -51,14 +56,46 @@ const PostAddNew = () => {
       status: postStatus.PENDING,
       category: {},
       hot: false,
-      author: "",
       image: "",
       user: {},
     },
   });
   const watchStatus = watch("status");
   const watchHot = watch("hot");
-
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [
+          {align: ""},
+          {align: "center"},
+          {align: "right"},
+          {align: "justify"},
+        ],
+        [{header: 1}, {header: 2}], // custom button values
+        [{list: "ordered"}, {list: "bullet"}],
+        [{header: [1, 2, 3, 4, 5, 6, false]}],
+        ["link", "image"],
+      ],
+      imageUploader: {
+        upload: async (file) => {
+          const bodyFormData = new FormData();
+          bodyFormData.append("image", file);
+          const response = await axios({
+            method: "POST",
+            url: imgbbApi,
+            data: bodyFormData,
+            headers: {
+              Accept: "application/form-data",
+            },
+          });
+          return response.data.data.url;
+        },
+      },
+    }),
+    []
+  );
   const {
     handleDeleteImage,
     handleUploadImage,
@@ -81,8 +118,10 @@ const PostAddNew = () => {
       const colRef = collection(db, "posts");
       await addDoc(colRef, {
         ...cloneValues,
+        content: content || "",
         image,
         userId: userInfo?.uid,
+        categoryId: cloneValues.category.id,
         createdAt: serverTimestamp(),
         user: userDetails,
       });
@@ -132,10 +171,10 @@ const PostAddNew = () => {
   }, []);
   useEffect(() => {
     async function fetchUserData() {
-      if (!userInfo.email) return;
+      if (!userInfo.userId) return;
       const q = query(
         collection(db, "users"),
-        where("email", "==", userInfo.email)
+        where("userId", "==", userInfo.userId)
       );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
@@ -143,7 +182,7 @@ const PostAddNew = () => {
       });
     }
     fetchUserData();
-  }, [userInfo.email]);
+  }, [userInfo.userId]);
 
   return (
     <PostAddNewStyles>
@@ -173,7 +212,7 @@ const PostAddNew = () => {
             ></Input>
           </Field>
         </div>
-        <div className="gap-x-10 grid grid-cols-2 mb-10">
+        <div className="gap-x-10 grid grid-cols-1 md:max-w-[400px]  mb-10">
           <Field>
             <Label>Image</Label>
             <ImageUpload
@@ -212,51 +251,66 @@ const PostAddNew = () => {
             )}
           </Field>
         </div>
-        <div className="gap-x-10 grid grid-cols-2 mb-10">
+        <div className="mb-10">
+          <Label>Content</Label>
           <Field>
-            <Label>Feature Post</Label>
-            <Toggle
-              on={watchHot === true}
-              onClick={() => {
-                setValue("hot", !watchHot);
-              }}
-            ></Toggle>
-          </Field>
-          <Field>
-            <Label>Status</Label>
-            <FieldCheckboxes>
-              <Radio
-                name="status"
-                control={control}
-                checked={+watchStatus === postStatus.APPROVED}
-                // onClick={() => setValue("status", "approved")}
-                // value="approved"
-                value={postStatus.APPROVED}
-              >
-                Approved
-              </Radio>
-              <Radio
-                name="status"
-                control={control}
-                checked={+watchStatus === postStatus.PENDING}
-                // onClick={() => setValue("status", "pending")}
-                // value="pending"
-                value={postStatus.PENDING}
-              >
-                Pending
-              </Radio>
-              <Radio
-                name="status"
-                control={control}
-                checked={+watchStatus === postStatus.REJECT}
-                // onClick={() => setValue("status", "reject")}
-                value={postStatus.REJECT}
-              >
-                Reject
-              </Radio>
-            </FieldCheckboxes>
+            <div className="entry-content w-full">
+              <ReactQuill
+                modules={modules}
+                theme="snow"
+                value={content || ""}
+                onChange={setContent}
+              />
+            </div>
           </Field>
         </div>
+        {userInfo.role !== userRole.USER && (
+          <div className="gap-x-10 grid grid-cols-2 mb-10">
+            <Field>
+              <Label>Feature Post</Label>
+              <Toggle
+                on={watchHot === true}
+                onClick={() => {
+                  setValue("hot", !watchHot);
+                }}
+              ></Toggle>
+            </Field>
+            <Field>
+              <Label>Status</Label>
+              <FieldCheckboxes>
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={+watchStatus === postStatus.APPROVED}
+                  // onClick={() => setValue("status", "approved")}
+                  // value="approved"
+                  value={postStatus.APPROVED}
+                >
+                  Approved
+                </Radio>
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={+watchStatus === postStatus.PENDING}
+                  // onClick={() => setValue("status", "pending")}
+                  // value="pending"
+                  value={postStatus.PENDING}
+                >
+                  Pending
+                </Radio>
+                <Radio
+                  name="status"
+                  control={control}
+                  checked={+watchStatus === postStatus.REJECT}
+                  // onClick={() => setValue("status", "reject")}
+                  value={postStatus.REJECT}
+                >
+                  Reject
+                </Radio>
+              </FieldCheckboxes>
+            </Field>
+          </div>
+        )}
         <Button
           type="submit"
           className="mx-auto"
@@ -271,6 +325,7 @@ const PostAddNew = () => {
 };
 const PostAddNewStyles = styled.div`
   font-size: 1.6rem;
+  margin-bottom: 40px;
   .dashboard-heading {
     font-weight: bold;
     font-size: 3.6rem;

@@ -9,7 +9,6 @@ import Layout from "../components/layout/Layout";
 import HomeNewest from "../components/modules/home/HomeNewest";
 import {useAuth} from "../contexts/auth-context";
 const HomePage = () => {
-  const {userInfo} = useAuth();
   useEffect(() => {
     document.title = "Home Page";
     window.scrollTo(0, 0);

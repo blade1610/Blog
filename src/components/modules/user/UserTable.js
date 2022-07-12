@@ -15,6 +15,7 @@ import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import Swal from "sweetalert2";
+import {useAuth} from "../../../contexts/auth-context";
 import {db} from "../../../firebase/firebase-config";
 import {userRole, userStatus} from "../../../utils/constants";
 import {ActionDelete, ActionEdit} from "../../action";
@@ -23,6 +24,7 @@ import LabelStatus from "../../label/LabelStatus";
 import Table from "../../table/Table";
 const USER_PER_PAGE = 5;
 const Usertable = ({filter}) => {
+  const {userInfo} = useAuth();
   const [userList, setUserList] = useState([]);
   const [userCount, setUserCount] = useState(0);
   const [lastDoc, setLastDoc] = useState();
@@ -131,14 +133,27 @@ const Usertable = ({filter}) => {
         <td>{renderLabelRole(Number(user?.role))}</td>
         <td className="text-center">
           <div className="flex items-center justify-center gap-2">
-            <ActionEdit
+            {user.role === userRole.ADMIN &&
+            userInfo.role !== userRole.ADMIN ? null : (
+              <>
+                <ActionEdit
+                  onClick={() =>
+                    navigate(`/manage/update-user/?id=${user.id}`)
+                  }
+                ></ActionEdit>
+                <ActionDelete
+                  onClick={() => handleDeleteUser(user)}
+                ></ActionDelete>
+              </>
+            )}
+            {/* <ActionEdit
               onClick={() =>
                 navigate(`/manage/update-user/?id=${user.id}`)
               }
-            ></ActionEdit>
-            <ActionDelete
+            ></ActionEdit> */}
+            {/* <ActionDelete
               onClick={() => handleDeleteUser(user)}
-            ></ActionDelete>
+            ></ActionDelete> */}
           </div>
         </td>
       </tr>

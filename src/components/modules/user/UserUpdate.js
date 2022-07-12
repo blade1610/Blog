@@ -14,11 +14,11 @@ import {Label} from "../../label";
 import Radio from "../../radio/Radio";
 import DashboardHeading from "../dashboard/DashboardHeading";
 import {getStorage, ref, getMetadata} from "firebase/storage";
+import Textarea from "../../textarea/Textarea";
 const UserUpdate = () => {
   const [params] = useSearchParams();
   const userId = params.get("id");
   const [imageName, setImageName] = useState("");
-
   const {
     control,
     handleSubmit,
@@ -84,7 +84,7 @@ const UserUpdate = () => {
   }, [imageUrl, setImage, storage]);
   if (!userId) return null;
   return (
-    <div>
+    <div className="mb-[40px]">
       <DashboardHeading
         title="New user"
         desc="Add new user to system"
@@ -195,6 +195,12 @@ const UserUpdate = () => {
                 User
               </Radio>
             </FieldCheckboxes>
+          </Field>
+        </div>
+        <div className="form-layout">
+          <Field>
+            <Label>Description</Label>
+            <Textarea name="description" control={control}></Textarea>
           </Field>
         </div>
         <Button

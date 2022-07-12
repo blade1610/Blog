@@ -1,6 +1,6 @@
 import React from "react";
 import styled, {css} from "styled-components";
-import {NavLink} from "react-router-dom";
+import {Link} from "react-router-dom";
 import PropTypes from "prop-types";
 
 const PostTitle = ({
@@ -11,7 +11,7 @@ const PostTitle = ({
 }) => {
   return (
     <PostTitleStyles className={className} size={size}>
-      <NavLink to={to}> {children}</NavLink>
+      <Link to={`/${to}`}> {children}</Link>
     </PostTitleStyles>
   );
 };

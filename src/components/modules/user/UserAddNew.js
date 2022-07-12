@@ -77,6 +77,7 @@ const UserAddNew = () => {
           status: Number(userStatus.ACTIVE),
           role: Number(userRole.USER),
           createdAt: serverTimestamp(),
+          description: "",
         });
         // setDoc(doc(db, "users", user.uid), {
         //   fullname: values.fullname,
@@ -105,6 +106,7 @@ const UserAddNew = () => {
         password: "",
         username: "",
         avatar: "",
+        description: "",
         status: userStatus.ACTIVE,
         role: userRole.USER,
         createdAt: new Date(),
@@ -115,7 +117,7 @@ const UserAddNew = () => {
     }
   };
   return (
-    <div>
+    <div className="mb-[40px]">
       <DashboardHeading
         title="New user"
         desc="Add new user to system"

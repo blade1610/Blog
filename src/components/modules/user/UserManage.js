@@ -1,27 +1,25 @@
-import {
-  collection,
-  getDocs,
-  limit,
-  onSnapshot,
-  query,
-  startAfter,
-  where,
-} from "firebase/firestore";
 import {debounce} from "lodash";
 import React, {useEffect, useRef, useState} from "react";
-import {db} from "../../../firebase/firebase-config";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../../contexts/auth-context";
+import {userRole} from "../../../utils/constants";
 import {Button} from "../../button";
 import DashboardHeading from "../dashboard/DashboardHeading";
 import UserTable from "./UserTable";
 const UserManage = () => {
+  const {userInfo} = useAuth();
   const inputRef = useRef(null);
+  const navigate = useNavigate();
   const [filter, setFilter] = useState("");
   const handleInputFilter = debounce((e) => {
     setFilter(e.target.value);
   }, 1000);
-
+  useEffect(() => {
+    if (Number(userInfo.role) === userRole.USER) navigate("/profile");
+  }, [navigate, userInfo.role]);
+  if (Number(userInfo.role) === userRole.USER) return null;
   return (
-    <div>
+    <div className="mb-[40px]">
       <div className=" flex justify-between">
         <DashboardHeading
           title="Users"
@@ -31,12 +29,12 @@ const UserManage = () => {
           Add new user
         </Button>
       </div>
-      <div className="flex justify-end mb-10 text-[16px]">
+      <div className="flex w-full md:max-w-[300px] justify-end ml-auto mb-10 text-[16px]">
         <input
           ref={inputRef}
           type="text"
           placeholder="Search..."
-          className="px-5 py-4 border border-gray-300 rounded-md"
+          className="w-full px-5 py-4 border border-gray-300 rounded-md"
           onChange={handleInputFilter}
         />
       </div>

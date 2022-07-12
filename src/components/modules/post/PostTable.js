@@ -18,21 +18,31 @@ import {useNavigate} from "react-router-dom";
 import ActionEdit from "../../action/ActionEdit";
 import ActionDelete from "../../action/ActionDelete";
 import Swal from "sweetalert2";
-import {postStatus} from "../../../utils/constants";
+import {postStatus, userRole} from "../../../utils/constants";
 import LabelStatus from "../../label/LabelStatus";
-const POST_PER_PAGE = 5;
+import {useAuth} from "../../../contexts/auth-context";
+const POST_PER_PAGE = 3;
 const PostTable = ({filter, categoryFilter}) => {
+  const {userInfo} = useAuth();
   const [postList, setPostList] = useState([]);
   const [postCount, setPostCount] = useState(0);
   const [lastDoc, setLastDoc] = useState();
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   const handleLoadMorePost = async () => {
-    const nextRef = query(
-      collection(db, "posts"),
-      startAfter(lastDoc || 0),
-      limit(POST_PER_PAGE)
-    );
+    const nextRef =
+      Number(userInfo?.role) === userRole.USER
+        ? query(
+            collection(db, "posts"),
+            where("userId", "==", userInfo.userId),
+            startAfter(lastDoc || 0),
+            limit(POST_PER_PAGE)
+          )
+        : query(
+            collection(db, "posts"),
+            startAfter(lastDoc || 0),
+            limit(POST_PER_PAGE)
+          );
     onSnapshot(nextRef, (snapshot) => {
       let result = [];
       setPostCount(Number(snapshot.size));
@@ -46,6 +56,7 @@ const PostTable = ({filter, categoryFilter}) => {
       documentSnapshots.docs[documentSnapshots.docs.length - 1];
     setLastDoc(lastVisible);
   };
+
   const handleDeletePost = async (postId) => {
     const docRef = doc(db, "posts", postId);
     Swal.fire({
@@ -65,14 +76,31 @@ const PostTable = ({filter, categoryFilter}) => {
   };
   useEffect(() => {
     async function fetchData() {
-      const colRef = collection(db, "posts");
-      const newRef = filter
-        ? query(
-            colRef,
-            where("title", ">=", filter),
-            where("title", "<=", filter + "utf8")
-          )
-        : query(colRef, limit(POST_PER_PAGE));
+      let colRef = collection(db, "posts");
+      let newRef;
+      if (userInfo.role === userRole.USER) {
+        newRef = filter
+          ? query(
+              colRef,
+              where("userId", "==", userInfo.userId),
+              where("title", ">=", filter),
+              where("title", "<=", filter + "\uf8ff")
+            )
+          : query(
+              colRef,
+              where("userId", "==", userInfo.userId),
+              limit(POST_PER_PAGE)
+            );
+      } else {
+        newRef = filter
+          ? query(
+              colRef,
+              where("title", ">=", filter),
+              where("title", "<=", filter + "\uf8ff")
+            )
+          : query(colRef, limit(POST_PER_PAGE));
+      }
+
       const documentSnapshots = await getDocs(newRef);
       const lastVisible =
         documentSnapshots.docs[documentSnapshots.docs.length - 1];
@@ -90,7 +118,8 @@ const PostTable = ({filter, categoryFilter}) => {
       setLastDoc(lastVisible);
     }
     fetchData();
-  }, [categoryFilter, filter]);
+  }, [categoryFilter, filter, userInfo.role, userInfo.userId]);
+
   const renderLabelStatus = (status) => {
     switch (status) {
       case postStatus.APPROVED:

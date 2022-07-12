@@ -5,9 +5,11 @@ import PostTitle from "./PostTitle";
 import PostMeta from "./PostMeta";
 import PostImage from "./PostImage";
 import PostCategory from "./PostCategory";
+import {useNavigate} from "react-router-dom";
 
 const PostFeatureItem = ({data}) => {
   const {category, user, author} = data;
+  const navigate = useNavigate();
   // useEffect(() => {
   //   async function getCategory() {
   //     const docRef = doc(db, "categories", data.categoryId);
@@ -36,9 +38,12 @@ const PostFeatureItem = ({data}) => {
 
   return (
     <PostFeatureItemStyles>
-      <PostImage to="/" url={data.image} alt={"image"}></PostImage>
+      <PostImage to={data.slug} url={data.image} alt={"image"}></PostImage>
       <div className="post-overlay"></div>
-      <div className="post-content">
+      <div
+        className="post-content"
+        onClick={() => navigate(`/${data.slug}`)}
+      >
         <div className="post-top">
           {category?.name && (
             <PostCategory to={category.slug}>
@@ -49,8 +54,8 @@ const PostFeatureItem = ({data}) => {
           )}
 
           <PostMeta
-            to={slugify(author || "/", {lower: true})}
-            authorName={author}
+            to={slugify(user?.username || "", {lower: true})}
+            authorName={data?.user?.fullname}
             date={formatDate}
           ></PostMeta>
         </div>
@@ -91,6 +96,7 @@ const PostFeatureItemStyles = styled.div`
       inset: 0;
       z-index: 10;
       padding: 20px;
+      cursor: pointer;
       /* pointer-events: none; */
       color: white;
     }
