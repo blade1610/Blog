@@ -49,40 +49,45 @@ const SignUpPage = () => {
     handleSubmit,
     formState: {errors, isSubmitting},
   } = useForm({
-    mode: "onTouched",
+    mode: "onSubmit",
     resolver: yupResolver(schema),
   });
 
   const handleSignUp = async (values) => {
     // if (!isValid) return;
-    const user = await createUserWithEmailAndPassword(
-      auth,
-      values.email,
-      values.password
-    );
-    await setDoc(doc(db, "users", auth.currentUser.uid), {
-      fullname: values.fullname,
-      email: values.email,
-      password: values.password,
-      username: slugify(values.fullname, {lower: true}),
-      avatar: ``,
-      status: userStatus.ACTIVE,
-      role: userRole.USER,
-      createdAt: serverTimestamp(),
-      description: "",
-      userId: auth.currentUser.uid,
-    });
-    // await addDoc(colRef, {
-    //   fullname: values.fullname,
-    //   email: values.email,
-    //   password: values.password,
-    // });
-    await updateProfile(auth.currentUser, {
-      displayName: values.fullname,
-      photoURL: `https://ui-avatars.com/api/?name=${values.fullname}`,
-    });
-    toast.success("Register Successfully");
-    navigate("/");
+    try {
+      const user = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
+      await setDoc(doc(db, "users", auth.currentUser.uid), {
+        fullname: values.fullname,
+        email: values.email,
+        password: values.password,
+        username: slugify(values.fullname, {lower: true}),
+        avatar: ``,
+        status: userStatus.ACTIVE,
+        role: userRole.USER,
+        createdAt: serverTimestamp(),
+        description: "",
+        userId: auth.currentUser.uid,
+      });
+      // await addDoc(colRef, {
+      //   fullname: values.fullname,
+      //   email: values.email,
+      //   password: values.password,
+      // });
+      await updateProfile(auth.currentUser, {
+        displayName: values.fullname,
+        photoURL: `https://ui-avatars.com/api/?name=${values.fullname}`,
+      });
+      toast.success("Register Successfully");
+      navigate("/");
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use")
+        toast.error("Email already in use");
+    }
   };
 
   useEffect(() => {
