@@ -8,7 +8,7 @@ import NotFoundPage from "../../../pages/NotFoundPage";
 const DashboardLayout = ({children}) => {
   const {userInfo} = useAuth();
   const [show, setShow] = useState(false);
-  if (!userInfo) return <NotFoundPage></NotFoundPage>;
+  if (!userInfo.userId) return <NotFoundPage></NotFoundPage>;
   return (
     <DashboardStyles>
       <DashboardHeader></DashboardHeader>
