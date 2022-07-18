@@ -18,15 +18,23 @@ const HomeFeature = () => {
     const queries = query(
       colRef,
       where("status", "==", 1),
-      where("hot", "==", true),
-      limit(3)
+      where("hot", "==", true)
+      // limit(3)
     );
     onSnapshot(queries, (snapshot) => {
       const result = [];
       snapshot.forEach((doc) => result.push({id: doc.id, ...doc.data()}));
-      setPosts(result);
+      setPosts(() => {
+        return result
+          .sort(
+            (value1, value2) =>
+              value2.createdAt.seconds - value1.createdAt.seconds
+          )
+          .splice(0, 3);
+      });
     });
   }, []);
+  console.log(posts);
 
   return (
     <HomeFeatureStyles className="home-block">
